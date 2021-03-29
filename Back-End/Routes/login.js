@@ -1,36 +1,29 @@
 const express = require('express');
-const encrypt = require('../Encryption/encryption');
-// const Users = require('../models/Users');
-const Users = require('../models/Users')();
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const { secret } = require('../Utils/config');
+const Users = require('../ModelsMongoDB/Users');
+const { auth } = require('../Utils/passport');
 
 const router = express.Router();
 
+auth();
+
 router.post('/', async (req, res) => {
-  console.log('Inside Login Post Request');
-  console.log('Req Body: ', req.body);
-  let status = 500;
-  let userData = {};
-  const users = await Users.findAll({
-    attributes: ['user_id', 'name', 'email', 'password'],
-  });
-  users.forEach((user) => {
-    if (user.dataValues.email === req.body.email) {
-      const encryptedPassword = encrypt(req.body.password);
-      if (user.dataValues.password === encryptedPassword) {
-        res.cookie('cookie', user.dataValues.user_id, { maxAge: 900000, httpOnly: false, path: '/' });
-        req.session.user = user;
-        status = 200;
-        userData = {
-          id: user.dataValues.user_id,
-          name: user.dataValues.name,
-          email: user.dataValues.email,
-        };
-      }
+  const doc = await Users.findOne({ email: req.body.email });
+  bcrypt.compare(req.body.password, doc.password, (err, isMatch) => {
+    if (isMatch === true) {
+      req.session.user = doc;
+      const { _id, name } = doc;
+      const payload = { _id, name };
+      const token = jwt.sign(payload, secret, {
+        expiresIn: 1008000,
+      });
+      res.status(200).send(`JWT ${token}`);
+    } else {
+      res.sendStatus(401);
     }
   });
-  console.log(users);
-  res.status(status);
-  res.send(userData);
 });
 
 module.exports = router;

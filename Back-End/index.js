@@ -5,17 +5,8 @@ const app = express();
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const cors = require('cors');
-const login = require('./Routes/login');
-const register = require('./Routes/register');
-const createGroup = require('./Routes/createGroup');
-const profilePage = require('./Routes/profilePage');
-const createExpense = require('./Routes/createExpense');
-const dashboard = require('./Routes/dashboard');
-const groupPage = require('./Routes/groupPage');
-const recentActivity = require('./Routes/recentActivity');
-const myGroups = require('./Routes/myGroups');
-
-app.set('view engine', 'ejs');
+const mongoose = require('mongoose');
+const { mongoDB } = require('./Utils/config');
 
 app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
 
@@ -39,15 +30,35 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use('/login', login);
-app.use('/register', register);
-app.use('/createGroup', createGroup);
-app.use('/profilePage', profilePage);
-app.use('/createExpense', createExpense);
-app.use('/dashboard', dashboard);
-app.use('/groupPage', groupPage);
-app.use('/recentActivity', recentActivity);
-app.use('/myGroups', myGroups);
+const options = {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  poolSize: 500,
+  bufferMaxEntries: 0,
+};
+
+mongoose.connect(mongoDB, options, (err) => {
+  if (err) {
+    console.log(err);
+    console.log('MongoDB Connection Failed');
+  } else {
+    console.log('MongoDB Connected');
+  }
+});
+
+mongoose.set('useNewUrlParser', true);
+mongoose.set('useFindAndModify', false);
+mongoose.set('useCreateIndex', true);
+
+app.use('/login', require('./Routes/login'));
+app.use('/register', require('./Routes/register'));
+app.use('/createGroup', require('./Routes/createGroup'));
+app.use('/profilePage', require('./Routes/profilePage'));
+app.use('/createExpense', require('./Routes/createExpense'));
+app.use('/dashboard', require('./Routes/dashboard'));
+app.use('/groupPage', require('./Routes/groupPage'));
+app.use('/recentActivity', require('./Routes/recentActivity'));
+app.use('/myGroups', require('./Routes/myGroups'));
 
 app.listen(3001, () => {
   console.log('Server listening on port 3001');
