@@ -30,10 +30,9 @@ const registerUser = async (req, res) => {
   let token = {};
   const newUser = new Users({
     name: req.body.name,
-    password: req.body.password,
     email: req.body.email,
+    password: req.body.password,
   });
-
   try {
     const doc = await newUser.save();
     req.session.user = doc;
@@ -43,7 +42,7 @@ const registerUser = async (req, res) => {
       expiresIn: 1008000,
     });
     res.status(200);
-  } catch {
+  } catch (e) {
     res.status(400);
   } finally {
     res.send(`JWT ${token}`);

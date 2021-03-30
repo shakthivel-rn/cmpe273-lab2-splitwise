@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import '../../App.css';
 import './Register.css';
 import axios from 'axios';
+import jwtDecode from 'jwt-decode';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 import {
@@ -19,8 +20,8 @@ class Register extends Component {
       email: '',
       password: '',
       redirectFlag: false,
-      fadeFlag: false,
       invalidRegisterFlag: false,
+      fadeFlag: false,
     };
     this.handleChangeName = this.handleChangeName.bind(this);
     this.handleChangeEmail = this.handleChangeEmail.bind(this);
@@ -65,7 +66,11 @@ class Register extends Component {
       .then((response) => {
         const { onSubmitUser } = this.props;
         onSubmitUser(response.data);
-        sessionStorage.setItem('userId', response.data.id);
+        localStorage.setItem('token', response.data);
+        const decoded = jwtDecode(response.data.split(' ')[1]);
+        const { _id } = decoded;
+        localStorage.setItem('userId', _id);
+        localStorage.setItem('userName', decoded.name);
         this.setState({
           redirectFlag: true,
         });

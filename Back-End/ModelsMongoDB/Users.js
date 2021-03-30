@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const Groups = require('./Groups').schema;
+const Transactions = require('./Transactions').schema;
 
 const { Schema } = mongoose;
 
@@ -31,9 +33,13 @@ const usersSchema = new Schema({
   userImage: {
     type: String,
   },
+  joinedGroups: [Groups],
+  invitedGroups: [Groups],
+  paidTransactions: [Transactions],
+  owedTransactions: [Transactions],
 },
 {
   versionKey: false,
 });
 
-module.exports = mongoose.model('users', usersSchema);
+module.exports = mongoose.model('user', usersSchema);

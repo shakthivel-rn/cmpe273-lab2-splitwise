@@ -4,8 +4,13 @@ const Transactions = require('../models/Transactions')();
 const Groups = require('../models/Groups')();
 const UsersGroups = require('../models/Users_Groups')();
 const Users = require('../models/Users')();
+const { checkAuth } = require('../Utils/passport');
 
 const router = express.Router();
+
+router.get('/sample', checkAuth, (req, res) => {
+  res.send('You are authorized');
+});
 
 router.get('/getGroupNames', async (req, res) => {
   const memberGroups = await UsersGroups.findAll({

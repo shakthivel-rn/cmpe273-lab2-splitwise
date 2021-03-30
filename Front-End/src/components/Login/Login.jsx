@@ -8,6 +8,7 @@ import {
 } from 'react-bootstrap';
 
 import axios from 'axios';
+import jwtDecode from 'jwt-decode';
 import { Redirect } from 'react-router';
 import { connect } from 'react-redux';
 import { propTypes } from 'react-bootstrap/esm/Image';
@@ -21,8 +22,8 @@ class Login extends Component {
       email: '',
       password: '',
       redirectFlag: false,
-      fadeFlag: false,
       invalidLoginFlag: false,
+      fadeFlag: false,
     };
     this.handleChangeEmail = this.handleChangeEmail.bind(this);
     this.handleChangePassword = this.handleChangePassword.bind(this);
@@ -59,7 +60,11 @@ class Login extends Component {
       .then((response) => {
         const { onSubmitUser } = this.props;
         onSubmitUser(response.data);
-        sessionStorage.setItem('userId', response.data.id);
+        localStorage.setItem('token', response.data);
+        const decoded = jwtDecode(response.data.split(' ')[1]);
+        const { _id, name } = decoded;
+        localStorage.setItem('userId', _id);
+        localStorage.setItem('userName', name);
         this.setState({
           redirectFlag: true,
         });

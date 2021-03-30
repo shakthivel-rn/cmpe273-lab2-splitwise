@@ -1,13 +1,21 @@
+/* eslint-disable no-underscore-dangle */
 const express = require('express');
-const UsersGroups = require('../models/Users_Groups')();
-const Users = require('../models/Users')();
-const Groups = require('../models/Groups')();
-const Transactions = require('../models/Transactions')();
+const Users = require('../ModelsMongoDB/Users');
 
 const router = express.Router();
 
-router.get('/', async (req, res) => {
-  const pendingInvites = await UsersGroups.findAll({
+router.post('/acceptGroupInvite', async (req, res) => {
+  const user = await Users.findOne({ _id: req.body.userId });
+  const elementPos = user.invitedGroups.map((x) => x._id).indexOf(req.body.groupId);
+  user.joinedGroups.push(user.invitedGroups[elementPos]);
+  user.invitedGroups.splice(elementPos, elementPos + 1);
+  user.save();
+  res.send();
+});
+
+/* router.get('/', async (req, res) => {
+
+    const pendingInvites = await UsersGroups.findAll({
     where: {
       user_id: req.query.userId,
       invite_status: false,
@@ -71,6 +79,7 @@ router.post('/leaveGroup', async (req, res) => {
     status = 200;
   }
   res.sendStatus(status);
-});
+  res.send();
+}); */
 
 module.exports = router;
