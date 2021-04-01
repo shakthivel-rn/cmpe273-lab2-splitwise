@@ -7,6 +7,10 @@ const transactionsSchema = new Schema({
     type: String,
     required: true,
   },
+  expenseDescription: {
+    type: String,
+    require: true,
+  },
   paidUserName: {
     type: String,
     required: true,

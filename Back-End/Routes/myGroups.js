@@ -1,15 +1,20 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable no-underscore-dangle */
 const express = require('express');
 const Users = require('../ModelsMongoDB/Users');
+const Groups = require('../ModelsMongoDB/Groups');
 
 const router = express.Router();
 
 router.post('/acceptGroupInvite', async (req, res) => {
+  const group = await Groups.findOne({ _id: req.body.groupId });
   const user = await Users.findOne({ _id: req.body.userId });
+  group.groupMembers.push(user._id);
+  await group.save();
   const elementPos = user.invitedGroups.map((x) => x._id).indexOf(req.body.groupId);
   user.joinedGroups.push(user.invitedGroups[elementPos]);
   user.invitedGroups.splice(elementPos, elementPos + 1);
-  user.save();
+  await user.save();
   res.send();
 });
 

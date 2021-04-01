@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 const express = require('express');
 const Users = require('../ModelsMongoDB/Users');
 const Groups = require('../ModelsMongoDB/Groups');
@@ -9,23 +10,16 @@ router.post('/', async (req, res) => {
   const otherUsers = await Users.find({ email: req.body.memberEmails });
   const newGroupModel = new Groups({
     name: req.body.groupName,
-    creatorId: req.body.userId,
+    creatorId: creatorUser._id,
   });
-  newGroupModel.groupMembers.push(req.body.userId);
-  await newGroupModel.save();
-  creatorUser.joinedGroups.push(newGroupModel);
-  await creatorUser.save();
+  newGroupModel.groupMembers.push(creatorUser._id);
+  const newGroup = await newGroupModel.save();
+  creatorUser.joinedGroups.push(newGroup._id);
+  creatorUser.save();
   otherUsers.forEach((otherUser) => {
-    otherUser.invitedGroups.push(newGroupModel);
+    otherUser.invitedGroups.push(newGroup._id);
     otherUser.save();
   });
-  /* creatorUser.joinedGroups.push(newGroupModel);
-  otherUsers.forEach((otherUser) => {
-    otherUser.invitedGroups.push(newGroupModel);
-  });
-  console.log(newGroupModel);
-  console.log(creatorUser);
-  console.log(otherUsers); */
   res.send();
 });
 

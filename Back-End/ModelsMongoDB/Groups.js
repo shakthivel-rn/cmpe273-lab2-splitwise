@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const Transactions = require('./Transactions').schema;
 
 const { Schema } = mongoose;
 
@@ -18,7 +17,9 @@ const groupsSchema = new Schema({
   image: {
     type: String,
   },
-  groupTransactions: [Transactions],
+  groupTransactions: {
+    type: Array,
+  },
 },
 {
   versionKey: false,
