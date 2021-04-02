@@ -11,12 +11,16 @@ const transactionsSchema = new Schema({
     type: String,
     require: true,
   },
-  paidUserName: {
-    type: String,
+  expenseAmount: {
+    type: Number,
     required: true,
   },
-  owedUserName: {
-    type: String,
+  paidUserId: {
+    type: mongoose.ObjectId,
+    required: true,
+  },
+  owedUserId: {
+    type: mongoose.ObjectId,
     required: true,
   },
   splitAmount: {
@@ -26,6 +30,10 @@ const transactionsSchema = new Schema({
   paymentStatus: {
     type: Boolean,
     required: true,
+  },
+  time: {
+    type: Date,
+    default: Date.now,
   },
 },
 {

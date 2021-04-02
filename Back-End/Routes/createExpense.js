@@ -10,18 +10,15 @@ router.post('/', async (req, res) => {
   const creatorUser = await Users.findOne({ _id: req.body.userId });
   const group = await Groups.findOne({ _id: req.body.groupId });
   const otherUsers = await Users.find({ _id: group.groupMembers });
-  const otherUsersNames = {};
-  otherUsers.forEach((otherUser) => {
-    otherUsersNames[otherUser._id] = otherUser.name;
-  });
   if (group.groupMembers.length > 1) {
     const transactions = group.groupMembers.map((groupMember) => {
       if (groupMember.equals(creatorUser._id)) {
         const transactionModel = new Transactions({
           groupName: group.name,
           expenseDescription: req.body.expenseDescription,
-          paidUserName: creatorUser.name,
-          owedUserName: otherUsersNames[groupMember],
+          expenseAmount: req.body.expenseAmount,
+          paidUserId: creatorUser._id,
+          owedUserId: groupMember._id,
           splitAmount: (req.body.expenseAmount / group.groupMembers.length).toFixed(2),
           paymentStatus: true,
         });
@@ -30,8 +27,9 @@ router.post('/', async (req, res) => {
       const transactionModel = new Transactions({
         groupName: group.name,
         expenseDescription: req.body.expenseDescription,
-        paidUserName: creatorUser.name,
-        owedUserName: otherUsersNames[groupMember],
+        expenseAmount: req.body.expenseAmount,
+        paidUserId: creatorUser._id,
+        owedUserId: groupMember._id,
         splitAmount: (req.body.expenseAmount / group.groupMembers.length).toFixed(2),
         paymentStatus: false,
       });

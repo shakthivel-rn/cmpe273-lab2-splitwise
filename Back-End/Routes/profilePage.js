@@ -1,79 +1,59 @@
 const express = require('express');
-const Users = require('../models/Users')();
+const Users = require('../ModelsMongoDB/Users');
+const User = require('../ModelsMongoDB/Users');
 
 const router = express.Router();
 
 router.get('/getUserDetails', async (req, res) => {
-  const user = await Users.findAll({
-    where: {
-      user_id: req.query.userId,
-    },
-  });
+  const user = await Users.findOne({ _id: req.query.userId });
   res.send(user);
 });
 
 router.put('/editName', async (req, res) => {
-  await Users.update({ name: req.body.name }, {
-    where: {
-      user_id: req.body.userId,
-    },
-  });
+  const user = await Users.findOne({ _id: req.body.userId });
+  user.name = req.body.name;
+  user.save();
   res.send();
 });
 
 router.put('/editEmail', async (req, res) => {
-  let status = 500;
-  const userEmail = await Users.findAll({
-    where: {
-      email: req.body.email,
-    },
-  });
-  if (userEmail.length === 0) {
-    await Users.update({ email: req.body.email }, {
-      where: {
-        user_id: req.body.userId,
-      },
-    });
-    status = 200;
-  } else {
-    status = 500;
+  try {
+    const user = await Users.findOne({ _id: req.body.userId });
+    user.email = req.body.req.body.email;
+    user.save();
+    res.status(200);
+  } catch {
+    res.status(400);
+  } finally {
+    res.send();
   }
-  res.sendStatus(status);
 });
 
 router.put('/editPhoneNumber', async (req, res) => {
-  await Users.update({ phone_number: req.body.phone }, {
-    where: {
-      user_id: req.body.userId,
-    },
-  });
+  const user = await User.findOne({ _id: req.body.userId });
+  user.phoneNumber = req.body.req.body.phone;
+  user.save();
   res.send();
 });
 
 router.put('/editDefaultCurrency', async (req, res) => {
-  await Users.update({ default_currency: req.body.defaultcurrency }, {
-    where: {
-      user_id: req.body.userId,
-    },
-  });
+  const user = await Users.findOne({ _id: req.body.userId });
+  user.defaultCurrency = req.body.req.body.defaultcurrency;
+  user.save();
   res.send();
 });
 
 router.put('/editTimeZone', async (req, res) => {
-  await Users.update({ timezone: req.body.timezone }, {
-    where: {
-      user_id: req.body.userId,
-    },
-  });
+  const user = await Users.findOne({ _id: req.body.userId });
+  user.timezone = req.body.req.body.timezone;
+  user.save();
   res.send();
 });
 
 router.put('/editLanguage', async (req, res) => {
-  await Users.update({ language: req.body.language }, {
-    where: {
-      user_id: req.body.userId,
-    },
-  });
+  const user = await Users.findOne({ _id: req.body.userId });
+  user.language = req.body.req.body.language;
+  user.save();
   res.send();
 });
 module.exports = router;

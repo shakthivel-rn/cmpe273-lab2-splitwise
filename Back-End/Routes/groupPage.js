@@ -1,12 +1,108 @@
+/* eslint-disable no-underscore-dangle */
 const express = require('express');
-const Users = require('../models/Users')();
-const Expenses = require('../models/Expenses')();
-const Transactions = require('../models/Transactions')();
+const Users = require('../ModelsMongoDB/Users');
+const Transactions = require('../ModelsMongoDB/Transactions');
 
 const router = express.Router();
 
 router.get('/', async (req, res) => {
-  const allUsers = await Users.findAll({
+  const allUsers = await Users.find({});
+  const allUsersNames = {};
+  allUsers.forEach((allUser) => {
+    allUsersNames[allUser._id] = allUser.name;
+  });
+  const user = await Users.findOne({ _id: req.query.userId });
+  const groupTransactions = await Transactions.find({ groupName: req.query.groupName }).sort({ time: 'desc' });
+  const result = groupTransactions.map((groupTransaction) => {
+    if (groupTransaction.paidUserId.equals(groupTransaction.owedUserId)
+      && groupTransaction.paidUserId.equals(user._id)) {
+      return ({
+        expenseName: groupTransaction.expenseDescription,
+        expenseAmount: groupTransaction.expenseAmount,
+        paidUserName: 'You',
+        owedUserName: 'You',
+        splitAmount: groupTransaction.splitAmount,
+        status: 'added',
+      });
+    }
+
+    if (groupTransaction.paidUserId.equals(groupTransaction.owedUserId)) {
+      return ({
+        expenseName: groupTransaction.expenseDescription,
+        expenseAmount: groupTransaction.expenseAmount,
+        paidUserName: allUsersNames[groupTransaction.paidUserId],
+        owedUserName: allUsersNames[groupTransaction.owedUserId],
+        splitAmount: groupTransaction.splitAmount,
+        status: 'added',
+      });
+    }
+
+    if (groupTransaction.paymentStatus === true
+      && groupTransaction.paidUserId.equals(user._id)) {
+      return ({
+        expenseName: groupTransaction.expenseDescription,
+        expenseAmount: groupTransaction.expenseAmount,
+        paidUserName: 'You',
+        owedUserName: allUsersNames[groupTransaction.owedUserId],
+        splitAmount: groupTransaction.splitAmount,
+        status: 'paid',
+      });
+    }
+
+    if (groupTransaction.paymentStatus === true
+      && groupTransaction.owedUserId.equals(user._id)) {
+      return ({
+        expenseName: groupTransaction.expenseDescription,
+        expenseAmount: groupTransaction.expenseAmount,
+        paidUserName: allUsersNames[groupTransaction.paidUserId],
+        owedUserName: 'You',
+        splitAmount: groupTransaction.splitAmount,
+        status: 'paid',
+      });
+    }
+    if (groupTransaction.paymentStatus === true) {
+      return ({
+        expenseName: groupTransaction.expenseDescription,
+        expenseAmount: groupTransaction.expenseAmount,
+        paidUserName: allUsersNames[groupTransaction.paidUserId],
+        owedUserName: allUsersNames[groupTransaction.owedUserId],
+        splitAmount: groupTransaction.splitAmount,
+        status: 'paid',
+      });
+    }
+
+    if (groupTransaction.paidUserId.equals(user._id)) {
+      return ({
+        expenseName: groupTransaction.expenseDescription,
+        expenseAmount: groupTransaction.expenseAmount,
+        paidUserName: 'You',
+        owedUserName: allUsersNames[groupTransaction.owedUserId],
+        splitAmount: groupTransaction.splitAmount,
+        status: 'owes',
+      });
+    }
+
+    if (groupTransaction.owedUserId.equals(user._id)) {
+      return ({
+        expenseName: groupTransaction.expenseDescription,
+        expenseAmount: groupTransaction.expenseAmount,
+        paidUserName: allUsersNames[groupTransaction.paidUserId],
+        owedUserName: 'You',
+        splitAmount: groupTransaction.splitAmount,
+        status: 'owes',
+      });
+    }
+
+    return ({
+      expenseName: groupTransaction.expenseDescription,
+      expenseAmount: groupTransaction.expenseAmount,
+      paidUserName: allUsersNames[groupTransaction.paidUserId],
+      owedUserName: allUsersNames[groupTransaction.owedUserId],
+      splitAmount: groupTransaction.splitAmount,
+      status: 'owes',
+    });
+  });
+  /* const allUsers = await Users.findAll({
     attributes: ['user_id', 'name'],
   });
   const allExpenses = await Expenses.findAll({
@@ -126,7 +222,8 @@ router.get('/', async (req, res) => {
       status: 'owes',
     });
   });
-  res.status(200).send(result);
+  res.status(200).send(result); */
+  res.send(result);
 });
 
 module.exports = router;

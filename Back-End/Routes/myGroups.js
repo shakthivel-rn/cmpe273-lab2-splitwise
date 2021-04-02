@@ -3,8 +3,28 @@
 const express = require('express');
 const Users = require('../ModelsMongoDB/Users');
 const Groups = require('../ModelsMongoDB/Groups');
+const Transactions = require('../ModelsMongoDB/Transactions');
 
 const router = express.Router();
+
+router.get('/', async (req, res) => {
+  const allUsers = await Users.find({});
+  const allUsersNames = {};
+  allUsers.forEach((allUser) => {
+    allUsersNames[allUser._id] = allUser.name;
+  });
+  const user = await Users.findOne({ _id: req.query.userId });
+  const groupIds = user.invitedGroups;
+  const pendingInvites = await Groups.find({ _id: groupIds });
+  const inviteDetails = pendingInvites.map((pendingInvite) => ({
+    groupId: pendingInvite._id,
+    groupName: pendingInvite.name,
+    creatorUser: allUsersNames[pendingInvite.creatorId],
+    creatorId: pendingInvite.creatorId,
+  }
+  ));
+  res.send(inviteDetails);
+});
 
 router.post('/acceptGroupInvite', async (req, res) => {
   const group = await Groups.findOne({ _id: req.body.groupId });
@@ -18,73 +38,36 @@ router.post('/acceptGroupInvite', async (req, res) => {
   res.send();
 });
 
-/* router.get('/', async (req, res) => {
-
-    const pendingInvites = await UsersGroups.findAll({
-    where: {
-      user_id: req.query.userId,
-      invite_status: false,
-    },
-  });
-
-  const allUsers = await Users.findAll({
-    attributes: ['user_id', 'name'],
-  });
-  const allGroups = await Groups.findAll({
-    attributes: ['group_id', 'group_name'],
-  });
-
-  const userNames = {};
-  const groupNames = {};
-
-  allUsers.forEach((eachUser) => {
-    userNames[eachUser.dataValues.user_id] = eachUser.dataValues.name;
-  });
-  allGroups.forEach((eachGroup) => {
-    groupNames[eachGroup.dataValues.group_id] = eachGroup.dataValues.group_name;
-  });
-
-  const inviteDetails = pendingInvites.map((pendingInvite) => ({
-    groupId: pendingInvite.dataValues.group_id,
-    groupName: groupNames[pendingInvite.dataValues.group_id],
-    creatorUser: userNames[pendingInvite.dataValues.creator_id],
-    creatorId: pendingInvite.dataValues.creator_id,
-  }
-  ));
-  res.send(inviteDetails);
-});
-
-router.post('/acceptGroupInvite', async (req, res) => {
-  await UsersGroups.update({ invite_status: true }, {
-    where: {
-      user_id: req.body.userId,
-      group_id: req.body.groupId,
-    },
-  });
-  res.sendStatus(200);
-});
-
 router.post('/leaveGroup', async (req, res) => {
-  let status = 500;
-  const groupOwedAmount = await Transactions.sum('split_amount',
+  let status = 401;
+  const user = await Users.findOne({ _id: req.body.userId });
+  const group = await Groups.findOne({ name: req.body.groupName });
+  const groupOwedAmount = await Transactions.aggregate(
+    [{
+      $match: {
+        groupName: req.body.groupName,
+        owedUserId: user._id,
+        paymentStatus: false,
+      },
+    },
     {
-      where: {
-        group_id: req.body.groupId,
-        owed_user_id: req.body.userId,
-        status: 0,
+      $group: {
+        _id: null,
+        totalOwedAmount: {
+          $sum: '$splitAmount',
+        },
       },
-    });
-  if (groupOwedAmount === 0) {
-    await UsersGroups.update({ invite_status: false }, {
-      where: {
-        user_id: req.body.userId,
-        group_id: req.body.groupId,
-      },
-    });
+    },
+    ],
+  );
+  if (groupOwedAmount[0].totalOwedAmount === 0) {
+    const elementPos = user.joinedGroups.map((x) => x._id).indexOf(group._id);
+    user.joinedGroups.splice(elementPos, 1);
+    const groupElementPos = group.groupMembers.map((x) => x._id).indexOf(user._id);
+    group.groupMembers.splice(groupElementPos, 1);
     status = 200;
   }
   res.sendStatus(status);
-  res.send();
-}); */
+});
 
 module.exports = router;
