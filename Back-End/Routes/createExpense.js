@@ -44,6 +44,9 @@ router.post('/', async (req, res) => {
       newOtherUser.transactions.push.apply(otherUser.transactions, transactionIds);
       newOtherUser.save();
     });
+    res.status(200);
+  } else {
+    res.status(401);
   }
   res.send();
 });
