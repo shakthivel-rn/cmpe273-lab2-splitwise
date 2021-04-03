@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 import React, { useEffect, useState } from 'react';
 import '../../App.css';
 import './DashboardBox.css';
@@ -8,7 +9,7 @@ import axios from 'axios';
 import SweetAlert from 'react-bootstrap-sweetalert';
 
 function Dashboardbox() {
-  const [userId] = useState(sessionStorage.getItem('userId'));
+  const [userId] = useState(localStorage.getItem('userId'));
   const [totalBalance, setTotalBalance] = useState(0);
   const [youOwe, setYouOwe] = useState(0);
   const [youAreOwed, setYouAreOwed] = useState(0);
@@ -22,7 +23,8 @@ function Dashboardbox() {
       const res = await axios.get('http://localhost:3001/dashboard/getTotalPaidAndOwedAmount', { params: { userId } });
       setYouOwe(res.data.totalOwedAmount);
       setYouAreOwed(res.data.totalPaidAmount);
-      setTotalBalance(res.data.totalPaidAmount - res.data.totalOwedAmount);
+      const totalBalanceValue = res.data.totalPaidAmount - res.data.totalOwedAmount;
+      setTotalBalance(totalBalanceValue.toFixed(2));
       setFadeFlag(true);
     };
     const getFriendsDetails = async () => {
@@ -48,7 +50,7 @@ function Dashboardbox() {
         <Row>
           <Col lg={8}>{friend.name}</Col>
           <Col>
-            <Button className="acceptinvitebutton" onClick={() => onSettleUp(friend.user_id)}>
+            <Button className="acceptinvitebutton" onClick={() => onSettleUp(friend._id)}>
               Settle Up
             </Button>
           </Col>

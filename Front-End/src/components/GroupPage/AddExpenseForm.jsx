@@ -14,7 +14,7 @@ class AddExpenseForm extends Component {
     // eslint-disable-next-line react/prop-types
     const { groupId } = props;
     this.state = {
-      userId: sessionStorage.getItem('userId'),
+      userId: localStorage.getItem('userId'),
       groupId,
       expenseDescription: '',
       expenseAmount: 0,
@@ -41,13 +41,13 @@ class AddExpenseForm extends Component {
 
   submitExpense = (e) => {
     e.preventDefault();
-    let {
+    const {
       userId,
     } = this.state;
     const {
       groupId, expenseDescription, expenseAmount,
     } = this.state;
-    userId = Number(userId);
+    // userId = Number(userId);
     const data = {
       userId,
       groupId,

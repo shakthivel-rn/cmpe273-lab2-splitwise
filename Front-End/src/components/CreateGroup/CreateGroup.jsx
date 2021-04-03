@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import '../../App.css';
 import './CreateGroup.css';
 import { Redirect } from 'react-router';
-import cookie from 'react-cookies';
 import {
   Container, Row, Col, Form, Figure, Button, Fade,
 } from 'react-bootstrap';
@@ -14,7 +13,7 @@ class CreateGroup extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      userId: sessionStorage.getItem('userId'),
+      userId: localStorage.getItem('userId'),
       groupName: '',
       inputs: ['Enter Group Member Email'],
       memberEmails: [],
@@ -23,7 +22,7 @@ class CreateGroup extends Component {
       invalidGroupNameFlag: false,
       groupCreatedFlag: false,
       redirectPage: false,
-      loadedCookie: cookie.load('cookie'),
+      authenticationToken: localStorage.getItem('token'),
     };
     this.appendInput = this.appendInput.bind(this);
     this.removeInput = this.removeInput.bind(this);
@@ -99,7 +98,7 @@ class CreateGroup extends Component {
   render() {
     const {
       inputs, fadeFlag, inputEmails, invalidGroupNameFlag,
-      groupCreatedFlag, redirectPage, loadedCookie,
+      groupCreatedFlag, redirectPage, authenticationToken,
     } = this.state;
     const inputEmailsList = inputEmails.map((inputEmail) => (
       <option value={inputEmail.email}>{inputEmail.email}</option>
@@ -135,7 +134,7 @@ class CreateGroup extends Component {
             }}
           />
         ) : null}
-        {!loadedCookie ? <Redirect to="/" /> : null}
+        {!authenticationToken ? <Redirect to="/" /> : null}
         {redirectPage}
         <Navigationbar />
         <div className="container">

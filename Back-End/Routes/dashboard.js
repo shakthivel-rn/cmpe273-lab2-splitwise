@@ -123,6 +123,7 @@ router.post('/settleAmount', async (req, res) => {
   transactions.forEach((transaction) => {
     const newTransaction = transaction;
     newTransaction.paymentStatus = true;
+    newTransaction.time = Date.now();
     newTransaction.save();
   });
   res.sendStatus(200);

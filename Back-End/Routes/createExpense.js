@@ -40,9 +40,9 @@ router.post('/', async (req, res) => {
     group.groupTransactions = [...group.groupTransactions, ...transactionIds];
     group.save();
     otherUsers.forEach((otherUser) => {
-      // eslint-disable-next-line prefer-spread
-      otherUser.transactions.push.apply(otherUser.transactions, transactionIds);
-      otherUser.save();
+      const newOtherUser = otherUser;
+      newOtherUser.transactions.push.apply(otherUser.transactions, transactionIds);
+      newOtherUser.save();
     });
   }
   res.send();

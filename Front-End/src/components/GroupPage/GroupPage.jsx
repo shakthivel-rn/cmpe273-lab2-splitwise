@@ -5,7 +5,6 @@ import { Redirect } from 'react-router';
 import {
   Container, Row, Col, Button, ListGroup, Modal, Fade,
 } from 'react-bootstrap';
-import cookie from 'react-cookies';
 import axios from 'axios';
 import Navigationbar from '../Navigationbar/Navigationbar';
 import DashboardSideBar from '../Dashboard/DashboardSideBar';
@@ -15,13 +14,13 @@ class GroupPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      userId: sessionStorage.getItem('userId'),
+      userId: localStorage.getItem('userId'),
       groupId: 0,
       groupName: '',
       groupDatas: [],
       isModalOpen: false,
       fadeFlag: false,
-      loadedCookie: cookie.load('cookie'),
+      authenticationToken: localStorage.getItem('token'),
     };
   }
 
@@ -35,8 +34,8 @@ class GroupPage extends Component {
   }
 
   async componentDidMount() {
-    const { userId, groupId } = this.state;
-    const res = await axios.get('http://localhost:3001/groupPage', { params: { userId, groupId } });
+    const { userId, groupName } = this.state;
+    const res = await axios.get('http://localhost:3001/groupPage', { params: { userId, groupName } });
     this.setState({
       groupDatas: [...res.data],
       fadeFlag: true,
@@ -44,9 +43,9 @@ class GroupPage extends Component {
   }
 
   async componentDidUpdate(prevProps, prevState) {
-    const { userId, groupId } = this.state;
-    if (groupId !== prevState.groupId) {
-      const res = await axios.get('http://localhost:3001/groupPage', { params: { userId, groupId } });
+    const { userId, groupName } = this.state;
+    if (groupName !== prevState.groupName) {
+      const res = await axios.get('http://localhost:3001/groupPage', { params: { userId, groupName } });
       // eslint-disable-next-line react/no-did-update-set-state
       this.setState({
         groupDatas: [...res.data],
@@ -61,7 +60,7 @@ class GroupPage extends Component {
 
   render() {
     const {
-      groupId, groupName, groupDatas, isModalOpen, fadeFlag, loadedCookie,
+      groupId, groupName, groupDatas, isModalOpen, fadeFlag, authenticationToken,
     } = this.state;
     const groupDataList = [];
     groupDatas.forEach((groupData) => {
@@ -91,7 +90,7 @@ class GroupPage extends Component {
     });
     return (
       <div>
-        {!loadedCookie ? <Redirect to="/" /> : null}
+        {!authenticationToken ? <Redirect to="/" /> : null}
         <Navigationbar />
         <div className="container">
           <div className="groupcontainer">

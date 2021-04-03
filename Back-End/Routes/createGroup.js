@@ -24,9 +24,7 @@ router.post('/', async (req, res) => {
 });
 
 router.get('/getMemberEmails', async (req, res) => {
-  const memberEmails = await Users.findAll({
-    attributes: ['email'],
-  });
+  const memberEmails = await Users.find({}, { email: 1 });
   res.send(memberEmails);
 });
 

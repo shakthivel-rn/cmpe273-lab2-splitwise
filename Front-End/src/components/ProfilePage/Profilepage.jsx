@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import '../../App.css';
 import './Profilepage.css';
 import { Redirect } from 'react-router';
-import cookie from 'react-cookies';
 import {
   Container, Row, Col, Form, Button, Figure, Fade,
 } from 'react-bootstrap';
@@ -13,7 +12,7 @@ import Navigationbar from '../Navigationbar/Navigationbar';
 class Profilepage extends Component {
   constructor(props) {
     super(props);
-    const userId = sessionStorage.getItem('userId');
+    const userId = localStorage.getItem('userId');
     this.state = {
       userId,
       name: 'Your Name',
@@ -23,7 +22,7 @@ class Profilepage extends Component {
       timezone: 'Choose Timezone',
       language: 'Choose Language',
       fadeFlag: false,
-      loadedCookie: cookie.load('cookie'),
+      authenticationToken: localStorage.getItem('token'),
       imageURL: null,
     };
     this.handleChangeName = this.handleChangeName.bind(this);
@@ -45,12 +44,12 @@ class Profilepage extends Component {
     const { userId } = this.state;
     const res = await axios.get('http://localhost:3001/profilePage/getUserDetails', { params: { userId } });
     this.setState({
-      name: res.data[0].name,
-      email: res.data[0].email,
-      phone: res.data[0].phone_number ? res.data[0].phone_number : 'Your Phonenumber',
-      defaultcurrency: res.data[0].default_currency ? res.data[0].default_currency : 'Choose Currency',
-      timezone: res.data[0].timezone ? res.data[0].timezone : 'Choose Timezone',
-      language: res.data[0].language ? res.data[0].language : 'Choose Language',
+      name: res.data.name,
+      email: res.data.email,
+      phone: res.data.phoneNumber ? res.data.phoneNumber : 'Your Phonenumber',
+      defaultcurrency: res.data.defaultCurrency ? res.data.defaultCurrency : 'Choose Currency',
+      timezone: res.data.timezone ? res.data.timezone : 'Choose Timezone',
+      language: res.data.language ? res.data.language : 'Choose Language',
       fadeFlag: true,
       submitFlag: false,
       errorFlag: false,
@@ -207,7 +206,7 @@ class Profilepage extends Component {
   render() {
     const {
       name, email, phone, defaultcurrency, timezone, language,
-      fadeFlag, submitFlag, errorFlag, loadedCookie, imageURL,
+      fadeFlag, submitFlag, errorFlag, authenticationToken, imageURL,
     } = this.state;
     return (
       <div>
@@ -233,7 +232,7 @@ class Profilepage extends Component {
             }}
           />
         ) : null}
-        { !loadedCookie ? <Redirect to="/" /> : null }
+        { !authenticationToken ? <Redirect to="/" /> : null }
         <Navigationbar />
         <div className="container">
           <div className="profilepage">

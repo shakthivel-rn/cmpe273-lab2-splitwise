@@ -60,11 +60,13 @@ router.post('/leaveGroup', async (req, res) => {
     },
     ],
   );
-  if (groupOwedAmount[0].totalOwedAmount === 0) {
+  if (groupOwedAmount.length === 0) {
     const elementPos = user.joinedGroups.map((x) => x._id).indexOf(group._id);
     user.joinedGroups.splice(elementPos, 1);
+    user.save();
     const groupElementPos = group.groupMembers.map((x) => x._id).indexOf(user._id);
     group.groupMembers.splice(groupElementPos, 1);
+    group.save();
     status = 200;
   }
   res.sendStatus(status);

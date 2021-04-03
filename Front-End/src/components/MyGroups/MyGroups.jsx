@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 import React, { Component } from 'react';
 import '../../App.css';
 import './MyGroups.css';
@@ -5,7 +6,6 @@ import { Redirect } from 'react-router';
 import {
   Container, Row, Col, ListGroup, Fade, Button,
 } from 'react-bootstrap';
-import cookie from 'react-cookies';
 import axios from 'axios';
 import SweetAlert from 'react-bootstrap-sweetalert';
 import Navigationbar from '../Navigationbar/Navigationbar';
@@ -15,7 +15,7 @@ class MyGroups extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      userId: sessionStorage.getItem('userId'),
+      userId: localStorage.getItem('userId'),
       inviteList: [],
       fadeFlag: false,
       inviteFlag: false,
@@ -23,7 +23,7 @@ class MyGroups extends Component {
       groupList: [],
       leaveGroupFlag: false,
       errorLeaveGroupFlag: false,
-      loadedCookie: cookie.load('cookie'),
+      authenticationToken: localStorage.getItem('token'),
     };
     this.handleAcceptInvite = this.handleAcceptInvite.bind(this);
   }
@@ -56,11 +56,11 @@ class MyGroups extends Component {
       });
   }
 
-  handleLeaveGroup(groupId) {
+  handleLeaveGroup(groupName) {
     const { userId } = this.state;
     const data = {
       userId,
-      groupId,
+      groupName,
     };
     axios.defaults.withCredentials = true;
     axios.post('http://localhost:3001/myGroups/leaveGroup', data)
@@ -79,7 +79,7 @@ class MyGroups extends Component {
   render() {
     const {
       inviteList, fadeFlag, inviteFlag, redirectPage,
-      groupList, leaveGroupFlag, errorLeaveGroupFlag, userId, loadedCookie,
+      groupList, leaveGroupFlag, errorLeaveGroupFlag, authenticationToken,
     } = this.state;
     const groupListDetails = [];
     const inviteListDetails = [];
@@ -87,9 +87,9 @@ class MyGroups extends Component {
       groupListDetails.push(
         <ListGroup.Item>
           <Row>
-            <Col lg={8}>{groupListItem.group_name}</Col>
+            <Col lg={8}>{groupListItem.name}</Col>
             <Col>
-              <Button className="acceptinvitebutton" onClick={() => this.handleLeaveGroup(groupListItem.group_id)}>
+              <Button className="acceptinvitebutton" onClick={() => this.handleLeaveGroup(groupListItem.name)}>
                 Leave
               </Button>
             </Col>
@@ -98,33 +98,18 @@ class MyGroups extends Component {
       );
     });
     inviteList.forEach((inviteListItem) => {
-      if (inviteListItem.creatorId === Number(userId)) {
-        inviteListDetails.push(
-          <ListGroup.Item>
-            <Row>
-              <Col lg={8}>{`Rejoin ${inviteListItem.groupName} group`}</Col>
-              <Col>
-                <Button className="acceptinvitebutton" onClick={() => this.handleAcceptInvite(inviteListItem.groupId)}>
-                  Join
-                </Button>
-              </Col>
-            </Row>
-          </ListGroup.Item>,
-        );
-      } else {
-        inviteListDetails.push(
-          <ListGroup.Item>
-            <Row>
-              <Col lg={8}>{`${inviteListItem.creatorUser} invited you to join ${inviteListItem.groupName} group`}</Col>
-              <Col>
-                <Button className="acceptinvitebutton" onClick={() => this.handleAcceptInvite(inviteListItem.groupId)}>
-                  Join
-                </Button>
-              </Col>
-            </Row>
-          </ListGroup.Item>,
-        );
-      }
+      inviteListDetails.push(
+        <ListGroup.Item>
+          <Row>
+            <Col lg={8}>{`${inviteListItem.creatorUser} invited you to join ${inviteListItem.groupName} group`}</Col>
+            <Col>
+              <Button className="acceptinvitebutton" onClick={() => this.handleAcceptInvite(inviteListItem.groupId)}>
+                Join
+              </Button>
+            </Col>
+          </Row>
+        </ListGroup.Item>,
+      );
     });
     return (
       <div>
@@ -161,7 +146,7 @@ class MyGroups extends Component {
             }}
           />
         ) : null}
-        {!loadedCookie ? <Redirect to="/" /> : null}
+        {!authenticationToken ? <Redirect to="/" /> : null}
         {redirectPage}
         <Navigationbar />
         <div className="container">

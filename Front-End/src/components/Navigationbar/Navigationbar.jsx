@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import '../../App.css';
 import './Navigationbar.css';
-import cookie from 'react-cookies';
 import {
   Navbar, Nav, Button, Dropdown,
 } from 'react-bootstrap';
@@ -12,21 +11,21 @@ class Navigationbar extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      loadedCookie: cookie.load('cookie'),
+      authenticationToken: localStorage.getItem('token'),
     };
     this.handleLogout = this.handleLogout.bind(this);
   }
 
   handleLogout = () => {
-    cookie.remove('cookie', { path: '/' });
+    localStorage.removeItem('token');
     // const { onLogoutUser } = this.props;
     // onLogoutUser();
   }
 
   render() {
     let navLogin = null;
-    const { loadedCookie } = this.state;
-    if (loadedCookie) {
+    const { authenticationToken } = this.state;
+    if (authenticationToken) {
       navLogin = (
         <Nav className="ml-auto">
           <Dropdown>

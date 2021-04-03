@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 import React, { Component } from 'react';
 import '../../App.css';
 import {
@@ -10,7 +11,7 @@ class DashboardSideBar extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      userId: sessionStorage.getItem('userId'),
+      userId: localStorage.getItem('userId'),
       groups: [],
       fadeFlag: false,
     };
@@ -32,12 +33,12 @@ class DashboardSideBar extends Component {
         <Link to={{
           pathname: '/grouppage',
           state: {
-            groupId: group.group_id,
-            groupName: group.group_name,
+            groupId: group._id,
+            groupName: group.name,
           },
         }}
         >
-          {group.group_name}
+          {group.name}
         </Link>
 
       </ListGroup.Item>

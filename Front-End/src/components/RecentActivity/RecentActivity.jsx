@@ -5,7 +5,6 @@ import { Redirect } from 'react-router';
 import {
   Container, Row, Col, ListGroup, Fade,
 } from 'react-bootstrap';
-import cookie from 'react-cookies';
 import axios from 'axios';
 import Navigationbar from '../Navigationbar/Navigationbar';
 import DashboardSideBar from '../Dashboard/DashboardSideBar';
@@ -14,10 +13,10 @@ class RecentActivity extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      userId: sessionStorage.getItem('userId'),
+      userId: localStorage.getItem('userId'),
       recentactivitylogs: [],
       fadeFlag: false,
-      loadedCookie: cookie.load('cookie'),
+      authenticationToken: localStorage.getItem('token'),
     };
   }
 
@@ -32,7 +31,7 @@ class RecentActivity extends Component {
   }
 
   render() {
-    const { recentactivitylogs, fadeFlag, loadedCookie } = this.state;
+    const { recentactivitylogs, fadeFlag, authenticationToken } = this.state;
 
     const recentactivityloglist = [];
     recentactivitylogs.forEach((recentactivitylog) => {
@@ -60,7 +59,7 @@ class RecentActivity extends Component {
     });
     return (
       <div>
-        {!loadedCookie ? <Redirect to="/" /> : null }
+        {!authenticationToken ? <Redirect to="/" /> : null }
         <Navigationbar />
         <div className="container">
           <div className="recentactivity">
