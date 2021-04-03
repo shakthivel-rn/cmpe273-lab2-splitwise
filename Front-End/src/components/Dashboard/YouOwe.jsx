@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import axios from 'axios';
 import React, { Component } from 'react';
 import '../../App.css';
@@ -14,14 +15,25 @@ class YouOwe extends Component {
       youowes: [],
       fadeFlag: false,
     };
+    this.getYouAreOwedDetails = this.getYouAreOwedDetails.bind(this);
   }
 
   async componentDidMount() {
+    this.getYouAreOwedDetails();
+  }
+
+  componentDidUpdate(prevProps) {
+    const { refreshBit } = this.props;
+    if (prevProps.refreshBit !== refreshBit) {
+      this.getYouAreOwedDetails();
+    }
+  }
+
+  async getYouAreOwedDetails() {
     const { userId } = this.state;
     const res = await axios.get('http://localhost:3001/dashboard/getIndividualOwedAmount', { params: { userId } });
-    const { youowes } = this.state;
     this.setState({
-      youowes: youowes.concat(res.data),
+      youowes: [...res.data],
       fadeFlag: true,
     });
   }

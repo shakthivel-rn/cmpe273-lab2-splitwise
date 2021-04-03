@@ -22,6 +22,7 @@ class GroupPage extends Component {
       fadeFlag: false,
       authenticationToken: localStorage.getItem('token'),
     };
+    this.getGroupDetails = this.getGroupDetails.bind(this);
   }
 
   static getDerivedStateFromProps(nextProps) {
@@ -52,6 +53,16 @@ class GroupPage extends Component {
         fadeFlag: true,
       });
     }
+  }
+
+  async getGroupDetails() {
+    const { userId, groupName } = this.state;
+    const res = await axios.get('http://localhost:3001/groupPage', { params: { userId, groupName } });
+    this.setState({
+      groupDatas: [...res.data],
+      fadeFlag: true,
+    });
+    this.closeModal();
   }
 
   openModal = () => this.setState({ isModalOpen: true });
@@ -115,7 +126,10 @@ class GroupPage extends Component {
                           <Modal.Title>Add an expense</Modal.Title>
                         </Modal.Header>
                         <Modal.Body>
-                          <AddExpenseForm groupId={groupId} />
+                          <AddExpenseForm
+                            groupId={groupId}
+                            getGroupDetails={this.getGroupDetails}
+                          />
                         </Modal.Body>
                         <Modal.Footer>
                           <Button onClick={this.closeModal} id="closemodal">Close</Button>

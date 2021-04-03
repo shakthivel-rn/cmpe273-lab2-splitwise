@@ -8,7 +8,7 @@ import {
 import axios from 'axios';
 import SweetAlert from 'react-bootstrap-sweetalert';
 
-function Dashboardbox() {
+function Dashboardbox(props) {
   const [userId] = useState(localStorage.getItem('userId'));
   const [totalBalance, setTotalBalance] = useState(0);
   const [youOwe, setYouOwe] = useState(0);
@@ -18,7 +18,20 @@ function Dashboardbox() {
   const [friends, setFriends] = useState([]);
   const [settledBalanceFlag, setSettledBalanceFlag] = useState(false);
 
+  const getFriendsDetails = async () => {
+    const res = await axios.get('http://localhost:3001/dashboard/getSettleModalDetails', { params: { userId } });
+    setFriends([...res.data]);
+  };
+  const getPaidAndOwedAmount = async () => {
+    const res = await axios.get('http://localhost:3001/dashboard/getTotalPaidAndOwedAmount', { params: { userId } });
+    setYouOwe(res.data.totalOwedAmount);
+    setYouAreOwed(res.data.totalPaidAmount);
+    const totalBalanceValue = res.data.totalPaidAmount - res.data.totalOwedAmount;
+    setTotalBalance(totalBalanceValue.toFixed(2));
+    setFadeFlag(true);
+  };
   useEffect(() => {
+    // eslint-disable-next-line no-shadow
     const getPaidAndOwedAmount = async () => {
       const res = await axios.get('http://localhost:3001/dashboard/getTotalPaidAndOwedAmount', { params: { userId } });
       setYouOwe(res.data.totalOwedAmount);
@@ -27,6 +40,7 @@ function Dashboardbox() {
       setTotalBalance(totalBalanceValue.toFixed(2));
       setFadeFlag(true);
     };
+    // eslint-disable-next-line no-shadow
     const getFriendsDetails = async () => {
       const res = await axios.get('http://localhost:3001/dashboard/getSettleModalDetails', { params: { userId } });
       setFriends([...res.data]);
@@ -61,7 +75,12 @@ function Dashboardbox() {
 
   const openModal = () => setModalOpen(true);
 
-  const closeModal = () => setModalOpen(false);
+  const closeModal = () => {
+    setModalOpen(false);
+    getPaidAndOwedAmount();
+    // eslint-disable-next-line react/prop-types
+    props.handleChange();
+  };
 
   return (
     <div>
@@ -72,6 +91,7 @@ function Dashboardbox() {
             title="Settled"
             onConfirm={() => {
               setSettledBalanceFlag(false);
+              getFriendsDetails();
             }}
           />
         ) : null}

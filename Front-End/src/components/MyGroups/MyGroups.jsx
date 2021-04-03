@@ -19,26 +19,18 @@ class MyGroups extends Component {
       inviteList: [],
       fadeFlag: false,
       inviteFlag: false,
-      redirectPage: '',
       groupList: [],
       leaveGroupFlag: false,
       errorLeaveGroupFlag: false,
       authenticationToken: localStorage.getItem('token'),
     };
     this.handleAcceptInvite = this.handleAcceptInvite.bind(this);
+    this.handleLeaveGroup = this.handleLeaveGroup.bind(this);
+    this.getMyGroupDetails = this.getMyGroupDetails.bind(this);
   }
 
   async componentDidMount() {
-    const { userId } = this.state;
-    const resGroupNames = await axios.get('http://localhost:3001/dashboard/getGroupNames', { params: { userId } });
-    this.setState({
-      groupList: [...resGroupNames.data],
-    });
-    const resGroupInvites = await axios.get('http://localhost:3001/myGroups', { params: { userId } });
-    this.setState({
-      inviteList: [...resGroupInvites.data],
-      fadeFlag: true,
-    });
+    this.getMyGroupDetails();
   }
 
   handleAcceptInvite(groupId) {
@@ -76,9 +68,22 @@ class MyGroups extends Component {
       });
   }
 
+  async getMyGroupDetails() {
+    const { userId } = this.state;
+    const resGroupNames = await axios.get('http://localhost:3001/dashboard/getGroupNames', { params: { userId } });
+    this.setState({
+      groupList: [...resGroupNames.data],
+    });
+    const resGroupInvites = await axios.get('http://localhost:3001/myGroups', { params: { userId } });
+    this.setState({
+      inviteList: [...resGroupInvites.data],
+      fadeFlag: true,
+    });
+  }
+
   render() {
     const {
-      inviteList, fadeFlag, inviteFlag, redirectPage,
+      inviteList, fadeFlag, inviteFlag,
       groupList, leaveGroupFlag, errorLeaveGroupFlag, authenticationToken,
     } = this.state;
     const groupListDetails = [];
@@ -119,8 +124,9 @@ class MyGroups extends Component {
             title="Joined group successfully"
             onConfirm={() => {
               this.setState({
-                redirectPage: <Redirect to="/dashboard" />,
+                inviteFlag: false,
               });
+              this.getMyGroupDetails();
             }}
           />
         ) : null}
@@ -130,8 +136,9 @@ class MyGroups extends Component {
             title="Left group successfully"
             onConfirm={() => {
               this.setState({
-                redirectPage: <Redirect to="/dashboard" />,
+                leaveGroupFlag: false,
               });
+              this.getMyGroupDetails();
             }}
           />
         ) : null}
@@ -147,7 +154,6 @@ class MyGroups extends Component {
           />
         ) : null}
         {!authenticationToken ? <Redirect to="/" /> : null}
-        {redirectPage}
         <Navigationbar />
         <div className="container">
           <div className="mygroups">

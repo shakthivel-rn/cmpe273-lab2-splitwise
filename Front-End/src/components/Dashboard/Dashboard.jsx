@@ -18,11 +18,21 @@ class Dashboard extends Component {
     super(props);
     this.state = {
       authenticationToken: localStorage.getItem('token'),
+      refreshBit: false,
     };
+    this.handleChange = this.handleChange.bind(this);
+  }
+
+  handleChange() {
+    const { refreshBit } = this.state;
+    const newRefreshBit = !refreshBit;
+    this.setState({
+      refreshBit: newRefreshBit,
+    });
   }
 
   render() {
-    const { authenticationToken } = this.state;
+    const { authenticationToken, refreshBit } = this.state;
     return (
       <div>
         {!authenticationToken ? <Redirect to="/" /> : null}
@@ -37,12 +47,12 @@ class Dashboard extends Component {
                 <Col>
                   <Row>
                     <Col>
-                      <Dashboardbox />
+                      <Dashboardbox handleChange={this.handleChange} />
                     </Col>
                   </Row>
                   <div id="balancecontainer">
                     <Row>
-                      <Col><YouOwe /></Col>
+                      <Col><YouOwe refreshBit={refreshBit} /></Col>
                       <Col><YouAreOwed /></Col>
                     </Row>
                   </div>
