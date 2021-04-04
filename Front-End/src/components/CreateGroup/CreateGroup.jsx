@@ -32,6 +32,7 @@ class CreateGroup extends Component {
   }
 
   async componentDidMount() {
+    axios.defaults.headers.common.authorization = localStorage.getItem('token');
     const res = await axios.get('http://localhost:3001/createGroup/getMemberEmails');
     this.setState({
       fadeFlag: true,
@@ -63,7 +64,6 @@ class CreateGroup extends Component {
       memberEmails,
       groupName,
     };
-    axios.defaults.withCredentials = true;
     axios.post('http://localhost:3001/createGroup', data)
       .then(() => {
         this.setState({

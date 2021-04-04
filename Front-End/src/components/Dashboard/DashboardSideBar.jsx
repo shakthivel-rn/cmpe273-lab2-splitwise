@@ -19,6 +19,7 @@ class DashboardSideBar extends Component {
 
   async componentDidMount() {
     const { userId } = this.state;
+    axios.defaults.headers.common.authorization = localStorage.getItem('token');
     const res = await axios.get('http://localhost:3001/dashboard/getGroupNames', { params: { userId } });
     this.setState({
       groups: [...res.data],

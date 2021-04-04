@@ -3,10 +3,11 @@ const express = require('express');
 const Users = require('../ModelsMongoDB/Users');
 const Groups = require('../ModelsMongoDB/Groups');
 const Transactions = require('../ModelsMongoDB/Transactions');
+const { checkAuth } = require('../Utils/passport');
 
 const router = express.Router();
 
-router.post('/', async (req, res) => {
+router.post('/', checkAuth, async (req, res) => {
   const creatorUser = await Users.findOne({ _id: req.body.userId });
   const group = await Groups.findOne({ _id: req.body.groupId });
   const otherUsers = await Users.find({ _id: group.groupMembers });

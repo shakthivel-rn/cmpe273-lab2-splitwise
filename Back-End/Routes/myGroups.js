@@ -1,13 +1,13 @@
-/* eslint-disable no-unused-vars */
 /* eslint-disable no-underscore-dangle */
 const express = require('express');
 const Users = require('../ModelsMongoDB/Users');
 const Groups = require('../ModelsMongoDB/Groups');
 const Transactions = require('../ModelsMongoDB/Transactions');
+const { checkAuth } = require('../Utils/passport');
 
 const router = express.Router();
 
-router.get('/', async (req, res) => {
+router.get('/', checkAuth, async (req, res) => {
   const allUsers = await Users.find({});
   const allUsersNames = {};
   allUsers.forEach((allUser) => {
@@ -26,7 +26,7 @@ router.get('/', async (req, res) => {
   res.send(inviteDetails);
 });
 
-router.post('/acceptGroupInvite', async (req, res) => {
+router.post('/acceptGroupInvite', checkAuth, async (req, res) => {
   const group = await Groups.findOne({ _id: req.body.groupId });
   const user = await Users.findOne({ _id: req.body.userId });
   group.groupMembers.push(user._id);
@@ -38,7 +38,7 @@ router.post('/acceptGroupInvite', async (req, res) => {
   res.send();
 });
 
-router.post('/leaveGroup', async (req, res) => {
+router.post('/leaveGroup', checkAuth, async (req, res) => {
   let status = 401;
   const user = await Users.findOne({ _id: req.body.userId });
   const group = await Groups.findOne({ name: req.body.groupName });

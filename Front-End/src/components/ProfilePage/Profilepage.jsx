@@ -22,6 +22,7 @@ class Profilepage extends Component {
       timezone: 'Choose Timezone',
       language: 'Choose Language',
       fadeFlag: false,
+      errorMessage: '',
       authenticationToken: localStorage.getItem('token'),
       imageURL: null,
     };
@@ -42,6 +43,7 @@ class Profilepage extends Component {
 
   async componentDidMount() {
     const { userId } = this.state;
+    axios.defaults.headers.common.authorization = localStorage.getItem('token');
     const res = await axios.get('http://localhost:3001/profilePage/getUserDetails', { params: { userId } });
     this.setState({
       name: res.data.name,
@@ -135,6 +137,7 @@ class Profilepage extends Component {
       .catch(() => {
         this.setState({
           errorFlag: true,
+          errorMessage: 'Email ID already exists',
         });
       });
   }
@@ -206,7 +209,7 @@ class Profilepage extends Component {
   render() {
     const {
       name, email, phone, defaultcurrency, timezone, language,
-      fadeFlag, submitFlag, errorFlag, authenticationToken, imageURL,
+      fadeFlag, submitFlag, errorFlag, errorMessage, authenticationToken, imageURL,
     } = this.state;
     return (
       <div>
@@ -224,7 +227,7 @@ class Profilepage extends Component {
         {errorFlag ? (
           <SweetAlert
             warning
-            title="Email already exists"
+            title={errorMessage}
             onConfirm={() => {
               this.setState({
                 errorFlag: false,
@@ -261,7 +264,7 @@ class Profilepage extends Component {
                         <p>Your Name</p>
                         <Form method="post" onSubmit={this.editName} inline>
                           <Form.Group controlId="editUserName">
-                            <Form.Control onChange={this.handleChangeName} className="mb-2 mr-sm-2" id="username" placeholder={name} />
+                            <Form.Control onChange={this.handleChangeName} className="mb-2 mr-sm-2" id="username" placeholder={name} required />
                           </Form.Group>
                           <Button type="submit" className="mb-2 editProfileButton">
                             Edit
@@ -271,27 +274,29 @@ class Profilepage extends Component {
                         <p>Your email address</p>
                         <Form method="post" onSubmit={this.editEmail} inline>
                           <Form.Group controlId="editUserEmail">
-                            <Form.Control onChange={this.handleChangeEmail} className="mb-2 mr-sm-2" id="useremail" placeholder={email} />
+                            <Form.Control onChange={this.handleChangeEmail} type="email" className="mb-2 mr-sm-2" id="useremail" placeholder={email} pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" required />
                           </Form.Group>
                           <Button type="submit" className="mb-2 editProfileButton">
                             Edit
                           </Button>
+                          <small>Format: sample@sample.domain</small>
                         </Form>
                         <br />
                         <p>Your phone number</p>
                         <Form method="post" onSubmit={this.editPhone} inline>
                           <Form.Group controlId="editUserPhone">
-                            <Form.Control onChange={this.handleChangePhone} className="mb-2 mr-sm-2" id="userphone" placeholder={phone} />
+                            <Form.Control onChange={this.handleChangePhone} className="mb-2 mr-sm-2" id="userphone" placeholder={phone} pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" required />
                           </Form.Group>
                           <Button type="submit" className="mb-2 editProfileButton">
                             Edit
                           </Button>
+                          <small>Format: 123-456-7890</small>
                         </Form>
                       </Col>
                       <Col>
                         <p>Your default currency</p>
                         <Form method="post" onSubmit={this.editDefaultCurrency} inline>
-                          <Form.Control onChange={this.handleChangeDefautCurrency} as="select" className="my-1 mr-sm-2" id="defaultcurrency" custom>
+                          <Form.Control onChange={this.handleChangeDefautCurrency} as="select" className="my-1 mr-sm-2" id="defaultcurrency" custom required>
                             <option value="Choose Currency">{defaultcurrency}</option>
                             <option value="USD">USD</option>
                             <option value="KWD">KWD</option>
@@ -307,7 +312,7 @@ class Profilepage extends Component {
                         <br />
                         <p>Your time zone</p>
                         <Form method="post" onSubmit={this.editTimeZone} inline>
-                          <Form.Control onChange={this.handleChangeTimezone} as="select" className="my-1 mr-sm-2" id="defaulttimezone" custom>
+                          <Form.Control onChange={this.handleChangeTimezone} as="select" className="my-1 mr-sm-2" id="defaulttimezone" custom required>
                             <option value="Choose Timezone">{timezone}</option>
                             <option value="Atlantic Standard Time (AST)">Atlantic Standard Time (AST)</option>
                             <option value="Eastern Standard Time (EST)">Eastern Standard Time (EST)</option>
@@ -326,7 +331,7 @@ class Profilepage extends Component {
                         <br />
                         <p>Language</p>
                         <Form method="post" onSubmit={this.editLanguage} inline>
-                          <Form.Control onChange={this.handleChangeLanguage} as="select" className="my-1 mr-sm-2" id="defaultlanguage" custom>
+                          <Form.Control onChange={this.handleChangeLanguage} as="select" className="my-1 mr-sm-2" id="defaultlanguage" custom required>
                             <option value="Choose Language">{language}</option>
                             <option value="English">English</option>
                             <option value="Spanish">Spanish</option>

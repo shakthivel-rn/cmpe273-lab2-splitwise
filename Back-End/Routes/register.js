@@ -9,14 +9,6 @@ const router = express.Router();
 
 auth();
 
-const validationMiddleware = (req, res, next) => {
-  if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(req.body.email)) {
-    next();
-  } else {
-    res.sendStatus(400);
-  }
-};
-
 const encryptionMiddleware = (req, res, next) => {
   bcrypt.genSalt(10, (err1, salt) => {
     bcrypt.hash(req.body.password, salt, (err2, hash) => {
@@ -49,6 +41,6 @@ const registerUser = async (req, res) => {
   }
 };
 
-router.post('/', validationMiddleware, encryptionMiddleware, registerUser);
+router.post('/', encryptionMiddleware, registerUser);
 
 module.exports = router;

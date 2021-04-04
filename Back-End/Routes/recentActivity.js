@@ -3,10 +3,11 @@ const express = require('express');
 const Users = require('../ModelsMongoDB/Users');
 const Groups = require('../ModelsMongoDB/Groups');
 const Transactions = require('../ModelsMongoDB/Transactions');
+const { checkAuth } = require('../Utils/passport');
 
 const router = express.Router();
 
-router.get('/', async (req, res) => {
+router.get('/', checkAuth, async (req, res) => {
   const allUsers = await Users.find({});
   const allUsersNames = {};
   allUsers.forEach((allUser) => {

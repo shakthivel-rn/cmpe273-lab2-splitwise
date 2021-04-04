@@ -12,14 +12,14 @@ router.get('/sample', checkAuth, (req, res) => {
   res.send('You are authorized');
 });
 
-router.get('/getGroupNames', async (req, res) => {
+router.get('/getGroupNames', checkAuth, async (req, res) => {
   const user = await Users.findOne({ _id: req.query.userId });
   const groupIds = user.joinedGroups;
   const memberGroups = await Groups.find({ _id: groupIds }, { name: 1 });
   res.send(memberGroups);
 });
 
-router.get('/getTotalPaidAndOwedAmount', async (req, res) => {
+router.get('/getTotalPaidAndOwedAmount', checkAuth, async (req, res) => {
   const user = await Users.findOne({ _id: req.query.userId });
   const transactionIds = user.transactions;
   const transactions = await Transactions.find({ _id: transactionIds });
@@ -40,7 +40,7 @@ router.get('/getTotalPaidAndOwedAmount', async (req, res) => {
   res.send({ totalPaidAmount, totalOwedAmount });
 });
 
-router.get('/getIndividualOwedAmount', async (req, res) => {
+router.get('/getIndividualOwedAmount', checkAuth, async (req, res) => {
   const user = await Users.findOne({ _id: req.query.userId });
   const allUsers = await Users.find({});
   const allUsersNames = {};
@@ -75,7 +75,7 @@ router.get('/getIndividualOwedAmount', async (req, res) => {
   res.send(result);
 });
 
-router.get('/getIndividualPaidAmount', async (req, res) => {
+router.get('/getIndividualPaidAmount', checkAuth, async (req, res) => {
   const user = await Users.findOne({ _id: req.query.userId });
   const allUsers = await Users.find({});
   const allUsersNames = {};
@@ -110,14 +110,14 @@ router.get('/getIndividualPaidAmount', async (req, res) => {
   res.send(result);
 });
 
-router.get('/getSettleModalDetails', async (req, res) => {
+router.get('/getSettleModalDetails', checkAuth, async (req, res) => {
   const paidUsersIds = await Transactions
     .find({ owedUserId: req.query.userId, paymentStatus: false }).distinct('paidUserId');
   const paidUsers = await Users.find({ _id: paidUsersIds }, { name: 1 });
   res.send(paidUsers);
 });
 
-router.post('/settleAmount', async (req, res) => {
+router.post('/settleAmount', checkAuth, async (req, res) => {
   const transactions = await Transactions
     .find({ owedUserId: req.body.userId, paidUserId: req.body.friendId });
   transactions.forEach((transaction) => {
