@@ -37,3 +37,8 @@
 #expensecreated {
     font-weight: bold;
 }
+
+#accordian {
+    margin-left: 14px;
+    width:700px
+}

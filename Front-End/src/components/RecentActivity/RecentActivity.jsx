@@ -43,17 +43,17 @@ class RecentActivity extends Component {
       if (recentactivitylog.status === 'owes') {
         if (recentactivitylog.owedUserName === 'You') {
           recentactivityloglist.push(
-            <ListGroup.Item>{`${recentactivitylog.owedUserName} owe ${recentactivitylog.paidUserName} ${recentactivitylog.splitAmount}$ in ${recentactivitylog.expenseName} expense` }</ListGroup.Item>,
+            <ListGroup.Item>{`${recentactivitylog.owedUserName} owe ${recentactivitylog.paidUserName} ${recentactivitylog.splitAmount}$ in ${recentactivitylog.expenseName} expense in ${recentactivitylog.groupName} group` }</ListGroup.Item>,
           );
         } else {
           recentactivityloglist.push(
-            <ListGroup.Item>{`${recentactivitylog.owedUserName} ${recentactivitylog.status} ${recentactivitylog.paidUserName} ${recentactivitylog.splitAmount}$ in ${recentactivitylog.expenseName} expense` }</ListGroup.Item>,
+            <ListGroup.Item>{`${recentactivitylog.owedUserName} ${recentactivitylog.status} ${recentactivitylog.paidUserName} ${recentactivitylog.splitAmount}$ in ${recentactivitylog.expenseName} expense in ${recentactivitylog.groupName} group` }</ListGroup.Item>,
           );
         }
       }
       if (recentactivitylog.status === 'paid') {
         recentactivityloglist.push(
-          <ListGroup.Item>{`${recentactivitylog.owedUserName} ${recentactivitylog.status} ${recentactivitylog.paidUserName} ${recentactivitylog.splitAmount}$ in ${recentactivitylog.expenseName} expense` }</ListGroup.Item>,
+          <ListGroup.Item>{`${recentactivitylog.owedUserName} ${recentactivitylog.status} ${recentactivitylog.paidUserName} ${recentactivitylog.splitAmount}$ in ${recentactivitylog.expenseName} expense in ${recentactivitylog.groupName} group` }</ListGroup.Item>,
         );
       }
     });

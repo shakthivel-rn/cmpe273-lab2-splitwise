@@ -3,7 +3,7 @@ import '../../App.css';
 import './GroupPage.css';
 import { Redirect } from 'react-router';
 import {
-  Container, Row, Col, Button, ListGroup, Modal, Fade,
+  Container, Row, Col, Button, Accordion, Modal, Fade, Card, ListGroup,
 } from 'react-bootstrap';
 import axios from 'axios';
 import Navigationbar from '../Navigationbar/Navigationbar';
@@ -18,11 +18,14 @@ class GroupPage extends Component {
       groupId: 0,
       groupName: '',
       groupDatas: [],
+      expenseDatas: [],
       isModalOpen: false,
       fadeFlag: false,
       authenticationToken: localStorage.getItem('token'),
+      eventKey: 0,
     };
     this.getGroupDetails = this.getGroupDetails.bind(this);
+    this.getExpenseDetails = this.getExpenseDetails.bind(this);
   }
 
   static getDerivedStateFromProps(nextProps) {
@@ -41,6 +44,8 @@ class GroupPage extends Component {
       groupDatas: [...res.data],
       fadeFlag: true,
     });
+    const { groupDatas } = this.state;
+    this.getExpenseDetails(groupDatas[0]);
   }
 
   async componentDidUpdate(prevProps, prevState) {
@@ -65,39 +70,80 @@ class GroupPage extends Component {
     this.closeModal();
   }
 
+  async getExpenseDetails(expenseDescription) {
+    const { userId, groupName } = this.state;
+    const res = await axios.get('http://localhost:3001/groupPage/getExpenseDetail', { params: { userId, groupName, expenseDescription } });
+    this.setState({
+      expenseDatas: [...res.data],
+    });
+  }
+
   openModal = () => this.setState({ isModalOpen: true });
 
   closeModal = () => this.setState({ isModalOpen: false });
 
   render() {
     const {
-      groupId, groupName, groupDatas, isModalOpen, fadeFlag, authenticationToken,
+      groupId, groupName, groupDatas, isModalOpen, fadeFlag, authenticationToken, expenseDatas,
     } = this.state;
+    let { eventKey } = this.state;
     const groupDataList = [];
-    groupDatas.forEach((groupData) => {
-      if (groupData.status === 'added') {
-        groupDataList.push(
+    const expenseDataList = [];
+    expenseDatas.forEach((expenseData) => {
+      if (expenseData.status === 'added') {
+        expenseDataList.unshift(
           <ListGroup.Item id="expensecreated">
-            {`${groupData.expenseName} -- Added By: ${groupData.paidUserName} -- Amount: ${groupData.expenseAmount}$` }
+            <Container>
+              <Row>
+                <Col xs={7}>{`Added By: ${expenseData.paidUserName}`}</Col>
+                <Col>{`Amount: ${expenseData.expenseAmount}$`}</Col>
+              </Row>
+            </Container>
           </ListGroup.Item>,
         );
       }
-      if (groupData.status === 'owes') {
-        if (groupData.owedUserName === 'You') {
-          groupDataList.push(
-            <ListGroup.Item>{`${groupData.expenseName} -- ${groupData.owedUserName} owe ${groupData.paidUserName} ${groupData.splitAmount}$` }</ListGroup.Item>,
+      if (expenseData.status === 'owes') {
+        if (expenseData.owedUserName === 'You') {
+          expenseDataList.push(
+            <ListGroup.Item>
+              {`${expenseData.owedUserName}
+            owe ${expenseData.paidUserName} ${expenseData.splitAmount}$` }
+            </ListGroup.Item>,
           );
         } else {
-          groupDataList.push(
-            <ListGroup.Item>{`${groupData.expenseName} -- ${groupData.owedUserName} ${groupData.status} ${groupData.paidUserName} ${groupData.splitAmount}$` }</ListGroup.Item>,
+          expenseDataList.push(
+            <ListGroup.Item>
+              {`${expenseData.owedUserName}
+            ${expenseData.status} ${expenseData.paidUserName}
+            ${expenseData.splitAmount}$` }
+            </ListGroup.Item>,
           );
         }
       }
-      if (groupData.status === 'paid') {
-        groupDataList.push(
-          <ListGroup.Item>{`${groupData.expenseName} -- ${groupData.owedUserName}  ${groupData.status} ${groupData.paidUserName} ${groupData.splitAmount}$` }</ListGroup.Item>,
+      if (expenseData.status === 'paid') {
+        expenseDataList.push(
+          <ListGroup.Item>
+            {`${expenseData.owedUserName}
+          ${expenseData.status} ${expenseData.paidUserName}
+          ${expenseData.splitAmount}$` }
+          </ListGroup.Item>,
         );
       }
+    });
+    groupDatas.forEach((groupData) => {
+      groupDataList.push(
+        <Card>
+          <Card.Header>
+            <Accordion.Toggle as={Button} variant="link" eventKey={eventKey.toString()} onClick={() => { this.getExpenseDetails(groupData); }}>
+              {groupData}
+            </Accordion.Toggle>
+          </Card.Header>
+          <Accordion.Collapse eventKey={eventKey.toString()}>
+            <Card.Body><ListGroup variant="flush">{expenseDataList}</ListGroup></Card.Body>
+          </Accordion.Collapse>
+        </Card>,
+      );
+      eventKey += 1;
     });
     return (
       <div>
@@ -140,11 +186,12 @@ class GroupPage extends Component {
                   <Row>
                     <Fade in={fadeFlag}>
                       <div id="groupcontent">
-                        {groupDataList.length === 0 ? <p>No expense created</p> : (
+                        <Accordion id="accordian" defaultActiveKey="0">{groupDataList}</Accordion>
+                        {/* groupDataList.length === 0 ? <p>No expense created</p> : (
                           <ListGroup variant="flush">
                             {groupDataList}
                           </ListGroup>
-                        )}
+                        ) */}
                       </div>
                     </Fade>
                   </Row>
