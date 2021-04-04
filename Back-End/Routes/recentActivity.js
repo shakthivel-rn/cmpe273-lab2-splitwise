@@ -116,7 +116,22 @@ router.get('/', checkAuth, async (req, res) => {
       status: 'owes',
     });
   });
-  res.send(result);
+  const { pageNumber, pageSize } = req.query;
+  const lastIndex = pageNumber * pageSize;
+  const firstIndex = lastIndex - pageSize;
+  const paginatedResult = result.slice(firstIndex, lastIndex);
+  res.send(paginatedResult);
+});
+
+router.get('/getPaginationNumbers', checkAuth, async (req, res) => {
+  const user = await Users.findOne({ _id: req.query.userId });
+  const groupIds = user.joinedGroups;
+  const memberGroups = await Groups.find({ _id: groupIds });
+  const memberGroupsNames = memberGroups.map((memberGroup) => memberGroup.name);
+  const groupTransactions = await Transactions.find({ groupName: memberGroupsNames }).sort({ time: 'desc' });
+  const { pageSize } = req.query;
+  const paginationNumber = (groupTransactions.length / pageSize);
+  res.send({ paginationNumber: Math.ceil(paginationNumber) });
 });
 
 module.exports = router;
