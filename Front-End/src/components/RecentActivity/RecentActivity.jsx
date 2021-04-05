@@ -43,6 +43,7 @@ class RecentActivity extends Component {
   onPageSizeChange = async (e) => {
     await this.setState({
       pageSize: e.target.value,
+      fadeFlag: false,
     });
     const { userId, pageSize } = this.state;
     const res = await axios.get('http://localhost:3001/recentActivity/getPaginationNumbers', { params: { userId, pageSize } });
@@ -58,6 +59,9 @@ class RecentActivity extends Component {
   }
 
   onPageChange = async (pagenumber) => {
+    await this.setState({
+      fadeFlag: false,
+    });
     const { userId, pageSize } = this.state;
     const pageNumber = pagenumber;
     const res = await axios.get('http://localhost:3001/recentActivity', { params: { userId, pageNumber, pageSize } });
@@ -145,9 +149,9 @@ class RecentActivity extends Component {
                           {recentactivityloglist}
                         </ListGroup>
                       )}
-                      <Pagination>{items}</Pagination>
                     </div>
                   </Fade>
+                  <Pagination>{items}</Pagination>
                 </Col>
               </Row>
             </Container>

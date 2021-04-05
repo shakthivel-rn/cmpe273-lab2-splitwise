@@ -1,14 +1,22 @@
 /* eslint-disable no-underscore-dangle */
 const express = require('express');
 const Users = require('../ModelsMongoDB/Users');
+const Expenses = require('../ModelsMongoDB/Expenses');
 const Transactions = require('../ModelsMongoDB/Transactions');
 const { checkAuth } = require('../Utils/passport');
 
 const router = express.Router();
 
 router.get('/', checkAuth, async (req, res) => {
-  const transactions = await Transactions.find({ groupName: req.query.groupName }).distinct('expenseDescription');
-  res.send(transactions);
+  const transactions = await Transactions.find({ groupName: req.query.groupName },
+    { expenseId: 1, expenseDescription: 1 });
+  const result = transactions.map((transaction) => ({
+    expenseId: transaction.expenseId,
+    expenseDescription: transaction.expenseDescription,
+  }));
+  const uniq = new Set(result.map((e) => JSON.stringify(e)));
+  const uniqueResult = Array.from(uniq).map((e) => JSON.parse(e));
+  res.send(uniqueResult);
 });
 
 router.get('/getExpenseDetail', checkAuth, async (req, res) => {
@@ -19,7 +27,7 @@ router.get('/getExpenseDetail', checkAuth, async (req, res) => {
   });
   const user = await Users.findOne({ _id: req.query.userId });
   const groupTransactions = await Transactions
-    .find({ groupName: req.query.groupName, expenseDescription: req.query.expenseDescription });
+    .find({ groupName: req.query.groupName, expenseId: req.query.expenseId });
   const result = groupTransactions.map((groupTransaction) => {
     if (groupTransaction.paidUserId.equals(groupTransaction.owedUserId)
         && groupTransaction.paidUserId.equals(user._id)) {
@@ -107,6 +115,39 @@ router.get('/getExpenseDetail', checkAuth, async (req, res) => {
       owedUserName: allUsersNames[groupTransaction.owedUserId],
       splitAmount: groupTransaction.splitAmount,
       status: 'owes',
+    });
+  });
+  res.send(result);
+});
+
+router.post('/postComment', checkAuth, async (req, res) => {
+  const expense = await Expenses.findOne({ _id: req.body.expenseId });
+  const user = await Users.findOne({ _id: req.body.userId });
+  const data = {
+    userName: user.name,
+    commentDetails: req.body.comment,
+  };
+  expense.comments.push(data);
+  console.log(expense);
+  await expense.save();
+  res.send();
+});
+
+router.get('/getComments', checkAuth, async (req, res) => {
+  const user = await Users.findOne({ _id: req.query.userId });
+  const expense = await Expenses.findOne({ _id: req.query.expenseId });
+  const result = expense.comments.map((comment) => {
+    if (comment.userName === user.name) {
+      return (
+        {
+          userName: 'You',
+          commentDetails: comment.commentDetails,
+        }
+      );
+    }
+    return ({
+      userName: comment.userName,
+      commentDetails: comment.commentDetails,
     });
   });
   res.send(result);

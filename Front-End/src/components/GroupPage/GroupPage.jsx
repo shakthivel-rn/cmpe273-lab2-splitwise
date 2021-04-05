@@ -1,9 +1,10 @@
+/* eslint-disable no-unused-vars */
 import React, { Component } from 'react';
 import '../../App.css';
 import './GroupPage.css';
 import { Redirect } from 'react-router';
 import {
-  Container, Row, Col, Button, Accordion, Modal, Fade, Card, ListGroup,
+  Container, Row, Col, Button, Accordion, Modal, Fade, Card, ListGroup, Form,
 } from 'react-bootstrap';
 import axios from 'axios';
 import Navigationbar from '../Navigationbar/Navigationbar';
@@ -21,11 +22,16 @@ class GroupPage extends Component {
       expenseDatas: [],
       isModalOpen: false,
       fadeFlag: false,
+      expenseFadeFlag: false,
       authenticationToken: localStorage.getItem('token'),
       eventKey: 0,
+      comment: '',
+      comments: [],
     };
     this.getGroupDetails = this.getGroupDetails.bind(this);
     this.getExpenseDetails = this.getExpenseDetails.bind(this);
+    this.handleChangeComment = this.handleChangeComment.bind(this);
+    this.onSubmitComment = this.onSubmitComment.bind(this);
   }
 
   static getDerivedStateFromProps(nextProps) {
@@ -44,8 +50,6 @@ class GroupPage extends Component {
       groupDatas: [...res.data],
       fadeFlag: true,
     });
-    const { groupDatas } = this.state;
-    this.getExpenseDetails(groupDatas[0]);
   }
 
   async componentDidUpdate(prevProps, prevState) {
@@ -70,12 +74,36 @@ class GroupPage extends Component {
     this.closeModal();
   }
 
-  async getExpenseDetails(expenseDescription) {
+  async getExpenseDetails(expenseId) {
     const { userId, groupName } = this.state;
-    const res = await axios.get('http://localhost:3001/groupPage/getExpenseDetail', { params: { userId, groupName, expenseDescription } });
+    const res = await axios.get('http://localhost:3001/groupPage/getExpenseDetail', { params: { userId, groupName, expenseId } });
     this.setState({
       expenseDatas: [...res.data],
+      expenseFadeFlag: true,
     });
+    const response = await axios.get('http://localhost:3001/groupPage/getComments', { params: { userId, expenseId } });
+    this.setState({
+      comments: [...response.data],
+    });
+  }
+
+  handleChangeComment = (e) => {
+    this.setState({
+      comment: e.target.value,
+    });
+  }
+
+  onSubmitComment = (expenseId) => {
+    const { userId, comment } = this.state;
+    const data = {
+      expenseId,
+      userId,
+      comment,
+    };
+    axios.post('http://localhost:3001/groupPage/postComment', data)
+      .then(() => {
+        this.getExpenseDetails(expenseId);
+      });
   }
 
   openModal = () => this.setState({ isModalOpen: true });
@@ -84,11 +112,20 @@ class GroupPage extends Component {
 
   render() {
     const {
-      groupId, groupName, groupDatas, isModalOpen, fadeFlag, authenticationToken, expenseDatas,
+      groupId, groupName, groupDatas, isModalOpen, fadeFlag, authenticationToken,
+      expenseDatas, expenseFadeFlag, comments,
     } = this.state;
     let { eventKey } = this.state;
     const groupDataList = [];
     const expenseDataList = [];
+    const commentsDataList = [];
+    comments.forEach((comment) => {
+      commentsDataList.push(
+        <ListGroup.Item>
+          {`${comment.userName}: ${comment.commentDetails}` }
+        </ListGroup.Item>,
+      );
+    });
     expenseDatas.forEach((expenseData) => {
       if (expenseData.status === 'added') {
         expenseDataList.unshift(
@@ -134,12 +171,41 @@ class GroupPage extends Component {
       groupDataList.push(
         <Card>
           <Card.Header>
-            <Accordion.Toggle as={Button} variant="link" eventKey={eventKey.toString()} onClick={() => { this.getExpenseDetails(groupData); }}>
-              {groupData}
+            <Accordion.Toggle id="expense" as={Button} variant="link" eventKey={eventKey.toString()} onClick={() => { this.getExpenseDetails(groupData.expenseId); }}>
+              {groupData.expenseDescription}
             </Accordion.Toggle>
           </Card.Header>
           <Accordion.Collapse eventKey={eventKey.toString()}>
-            <Card.Body><ListGroup variant="flush">{expenseDataList}</ListGroup></Card.Body>
+            <Card.Body>
+              <Fade in={expenseFadeFlag}>
+                <ListGroup variant="flush">
+                  <div>
+                    {expenseDataList}
+                  </div>
+                  <div>
+                    <h5 id="commentsheading">Notes and Comments</h5>
+                    <Container>
+                      <Row>
+                        <Col>
+                          <ListGroup variant="flush">
+                            {commentsDataList}
+                            {' '}
+                          </ListGroup>
+                        </Col>
+                        <Col>
+                          <Form inline>
+                            <Form.Control onChange={this.handleChangeComment} as="textarea" placeholder="Add comment" rows={3} />
+                            <Button id="commentbutton" onClick={() => { this.onSubmitComment(groupData.expenseId); }} className="mb-2">
+                              Post
+                            </Button>
+                          </Form>
+                        </Col>
+                      </Row>
+                    </Container>
+                  </div>
+                </ListGroup>
+              </Fade>
+            </Card.Body>
           </Accordion.Collapse>
         </Card>,
       );
@@ -186,12 +252,7 @@ class GroupPage extends Component {
                   <Row>
                     <Fade in={fadeFlag}>
                       <div id="groupcontent">
-                        <Accordion id="accordian" defaultActiveKey="0">{groupDataList}</Accordion>
-                        {/* groupDataList.length === 0 ? <p>No expense created</p> : (
-                          <ListGroup variant="flush">
-                            {groupDataList}
-                          </ListGroup>
-                        ) */}
+                        <Accordion id="accordian">{groupDataList}</Accordion>
                       </div>
                     </Fade>
                   </Row>

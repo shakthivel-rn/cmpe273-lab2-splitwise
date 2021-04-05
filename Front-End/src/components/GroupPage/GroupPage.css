@@ -42,3 +42,18 @@
     margin-left: 14px;
     width:700px
 }
+
+#expense {
+    font-size: 21px;
+    color: #373b3f;
+}
+
+#commentsheading {
+    margin-top: 8px;;
+}
+
+#commentbutton {
+    margin-top: 8px;
+    background-color: rgb(255, 81, 0);
+    border-color:   rgb(255, 81, 0);
+}

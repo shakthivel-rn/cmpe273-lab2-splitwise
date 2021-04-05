@@ -2,6 +2,7 @@
 const express = require('express');
 const Users = require('../ModelsMongoDB/Users');
 const Groups = require('../ModelsMongoDB/Groups');
+const Expenses = require('../ModelsMongoDB/Expenses');
 const Transactions = require('../ModelsMongoDB/Transactions');
 const { checkAuth } = require('../Utils/passport');
 
@@ -12,10 +13,17 @@ router.post('/', checkAuth, async (req, res) => {
   const group = await Groups.findOne({ _id: req.body.groupId });
   const otherUsers = await Users.find({ _id: group.groupMembers });
   if (group.groupMembers.length > 1) {
+    const expenseModel = new Expenses({
+      groupName: group.name,
+      expenseDescription: req.body.expenseDescription,
+      expenseAmount: req.body.expenseAmount,
+    });
+    const expense = await expenseModel.save();
     const transactions = group.groupMembers.map((groupMember) => {
       if (groupMember.equals(creatorUser._id)) {
         const transactionModel = new Transactions({
           groupName: group.name,
+          expenseId: expense._id,
           expenseDescription: req.body.expenseDescription,
           expenseAmount: req.body.expenseAmount,
           paidUserId: creatorUser._id,
@@ -27,6 +35,7 @@ router.post('/', checkAuth, async (req, res) => {
       }
       const transactionModel = new Transactions({
         groupName: group.name,
+        expenseId: expense._id,
         expenseDescription: req.body.expenseDescription,
         expenseAmount: req.body.expenseAmount,
         paidUserId: creatorUser._id,

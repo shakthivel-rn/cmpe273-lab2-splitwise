@@ -7,6 +7,10 @@ const transactionsSchema = new Schema({
     type: String,
     required: true,
   },
+  expenseId: {
+    type: mongoose.ObjectId,
+    required: true,
+  },
   expenseDescription: {
     type: String,
     require: true,
