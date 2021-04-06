@@ -1,13 +1,15 @@
+/* eslint-disable no-underscore-dangle */
 import React, { Component } from 'react';
 import '../../App.css';
 import './Profilepage.css';
 import { Redirect } from 'react-router';
 import {
-  Container, Row, Col, Form, Button, Figure, Fade,
+  Container, Row, Col, Form, Button, Fade,
 } from 'react-bootstrap';
 import axios from 'axios';
 import SweetAlert from 'react-bootstrap-sweetalert';
 import Navigationbar from '../Navigationbar/Navigationbar';
+import ProfileImage from './ProfileImage';
 
 class Profilepage extends Component {
   constructor(props) {
@@ -24,7 +26,7 @@ class Profilepage extends Component {
       fadeFlag: false,
       errorMessage: '',
       authenticationToken: localStorage.getItem('token'),
-      imageURL: null,
+      refreshBit: false,
     };
     this.handleChangeName = this.handleChangeName.bind(this);
     this.handleChangeEmail = this.handleChangeEmail.bind(this);
@@ -32,13 +34,13 @@ class Profilepage extends Component {
     this.handleChangeDefautCurrency = this.handleChangeDefautCurrency.bind(this);
     this.handleChangeTimezone = this.handleChangeTimezone.bind(this);
     this.handleChangeLanguage = this.handleChangeLanguage.bind(this);
-    this.handleImage = this.handleImage.bind(this);
     this.editName = this.editName.bind(this);
     this.editEmail = this.editEmail.bind(this);
     this.editPhone = this.editPhone.bind(this);
     this.editDefaultCurrency = this.editDefaultCurrency.bind(this);
     this.editTimeZone = this.editTimeZone.bind(this);
     this.editLanguage = this.editLanguage.bind(this);
+    this.handleChange = this.handleChange.bind(this);
   }
 
   async componentDidMount() {
@@ -55,16 +57,14 @@ class Profilepage extends Component {
       fadeFlag: true,
       submitFlag: false,
       errorFlag: false,
-      imageURL: localStorage.getItem(`userImage${userId}`),
     });
   }
 
-  handleImage = (e) => {
-    const { userId } = this.state;
-    const reader = new FileReader();
-    reader.readAsDataURL(e.target.files[0]);
-    reader.addEventListener('load', () => {
-      localStorage.setItem(`userImage${userId}`, reader.result);
+  handleChange() {
+    const { refreshBit } = this.state;
+    const newRefreshBit = !refreshBit;
+    this.setState({
+      refreshBit: newRefreshBit,
     });
   }
 
@@ -209,7 +209,7 @@ class Profilepage extends Component {
   render() {
     const {
       name, email, phone, defaultcurrency, timezone, language,
-      fadeFlag, submitFlag, errorFlag, errorMessage, authenticationToken, imageURL,
+      fadeFlag, submitFlag, errorFlag, errorMessage, authenticationToken, refreshBit,
     } = this.state;
     return (
       <div>
@@ -236,7 +236,7 @@ class Profilepage extends Component {
           />
         ) : null}
         { !authenticationToken ? <Redirect to="/" /> : null }
-        <Navigationbar />
+        <Navigationbar refreshBit={refreshBit} />
         <div className="container">
           <div className="profilepage">
             <h1>Your Account</h1>
@@ -246,19 +246,7 @@ class Profilepage extends Component {
                   <div>
                     <Row>
                       <Col lg={3}>
-                        <Figure>
-                          <Figure.Image
-                            width={171}
-                            height={180}
-                            alt="171x180"
-                            src={imageURL === null ? `${window.location.origin}/dummy_user.png` : imageURL}
-                          />
-                        </Figure>
-                        <Form>
-                          <Form.Group>
-                            <Form.File id="userimage" label="Change your avatar" onChange={this.handleImage} />
-                          </Form.Group>
-                        </Form>
+                        <ProfileImage handleChange={this.handleChange} />
                       </Col>
                       <Col>
                         <p>Your Name</p>

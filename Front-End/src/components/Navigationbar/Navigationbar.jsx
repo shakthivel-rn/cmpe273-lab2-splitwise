@@ -1,8 +1,10 @@
+/* eslint-disable react/prop-types */
 import React, { Component } from 'react';
+import axios from 'axios';
 import '../../App.css';
 import './Navigationbar.css';
 import {
-  Navbar, Nav, Button, Dropdown,
+  Navbar, Nav, Button, Dropdown, Image,
 } from 'react-bootstrap';
 // import { connect } from 'react-redux';
 // import { propTypes } from 'react-bootstrap/esm/Image';
@@ -11,9 +13,31 @@ class Navigationbar extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      userId: localStorage.getItem('userId'),
       authenticationToken: localStorage.getItem('token'),
+      imagePreview: null,
     };
     this.handleLogout = this.handleLogout.bind(this);
+    this.getUserProfileImage = this.getUserProfileImage.bind(this);
+  }
+
+  async componentDidMount() {
+    this.getUserProfileImage();
+  }
+
+  componentDidUpdate(prevProps) {
+    const { refreshBit } = this.props;
+    if (prevProps.refreshBit !== refreshBit) {
+      this.getUserProfileImage();
+    }
+  }
+
+  getUserProfileImage = async () => {
+    const { userId } = this.state;
+    const res = await axios.get('http://localhost:3001/profilePage/getImage', { params: { userId } });
+    this.setState({
+      imagePreview: res.data.userImage,
+    });
   }
 
   handleLogout = () => {
@@ -24,7 +48,11 @@ class Navigationbar extends Component {
 
   render() {
     let navLogin = null;
-    const { authenticationToken } = this.state;
+    let profileImage = null;
+    const { authenticationToken, imagePreview } = this.state;
+    if (authenticationToken) {
+      profileImage = <Image src={imagePreview} width={70} roundedCircle />;
+    }
     if (authenticationToken) {
       navLogin = (
         <Nav className="ml-auto">
@@ -66,6 +94,7 @@ class Navigationbar extends Component {
             </Navbar.Brand>
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             {navLogin}
+            {profileImage}
           </div>
         </Navbar>
       </div>

@@ -128,7 +128,6 @@ router.post('/postComment', checkAuth, async (req, res) => {
     commentDetails: req.body.comment,
   };
   expense.comments.push(data);
-  console.log(expense);
   await expense.save();
   res.send();
 });
