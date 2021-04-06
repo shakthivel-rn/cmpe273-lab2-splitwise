@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import '../../App.css';
 import './Navigationbar.css';
+import { Link } from 'react-router-dom';
 import {
   Navbar, Nav, Button, Dropdown, Image,
 } from 'react-bootstrap';
@@ -62,8 +63,22 @@ class Navigationbar extends Component {
             </Dropdown.Toggle>
 
             <Dropdown.Menu>
-              <Dropdown.Item href="/profilepage">Profile Page</Dropdown.Item>
-              <Dropdown.Item href="/creategroup">Create Group</Dropdown.Item>
+              <Dropdown.Item>
+                <Link to={{
+                  pathname: '/profilepage',
+                }}
+                >
+                  Profile Page
+                </Link>
+              </Dropdown.Item>
+              <Dropdown.Item>
+                <Link to={{
+                  pathname: '/creategroup',
+                }}
+                >
+                  Create Group
+                </Link>
+              </Dropdown.Item>
               <Dropdown.Item onClick={this.handleLogout} href="/">Sign Out</Dropdown.Item>
             </Dropdown.Menu>
           </Dropdown>
@@ -81,7 +96,7 @@ class Navigationbar extends Component {
       <div>
         <Navbar id="nav-bar">
           <div className="container">
-            <Navbar.Brand id="nav-brand" href="/dashboard">
+            <Navbar.Brand id="nav-brand">
               <img
                 alt=""
                 src={`${window.location.origin}/splitwise-logo.png`}
@@ -90,7 +105,14 @@ class Navigationbar extends Component {
                 className="d-inline-block align-top"
               />
               {' '}
-              Splitwise
+              <Link
+                id="dashboardLink"
+                to={{
+                  pathname: '/dashboard',
+                }}
+              >
+                Splitwise
+              </Link>
             </Navbar.Brand>
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             {navLogin}

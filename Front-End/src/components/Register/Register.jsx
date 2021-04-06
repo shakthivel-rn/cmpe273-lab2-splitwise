@@ -65,12 +65,12 @@ class Register extends Component {
     axios.post('http://localhost:3001/register', data)
       .then((response) => {
         const { onSubmitUser } = this.props;
-        onSubmitUser(response.data);
         localStorage.setItem('token', response.data);
         const decoded = jwtDecode(response.data.split(' ')[1]);
         const { _id } = decoded;
         localStorage.setItem('userId', _id);
         localStorage.setItem('userName', decoded.name);
+        onSubmitUser(decoded);
         this.setState({
           redirectFlag: true,
         });
@@ -155,7 +155,6 @@ class Register extends Component {
 const mapStateToProps = (state) => ({
   userId: state.id,
   userName: state.name,
-  userEmail: state.email,
 });
 const mapDispatchToProps = (dispatch) => ({
   onSubmitUser: (userData) => dispatch({ type: 'REGISTER_USER', value: userData }),

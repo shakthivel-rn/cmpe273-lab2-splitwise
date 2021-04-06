@@ -59,12 +59,12 @@ class Login extends Component {
     axios.post('http://localhost:3001/login', data)
       .then((response) => {
         const { onSubmitUser } = this.props;
-        onSubmitUser(response.data);
         localStorage.setItem('token', response.data);
         const decoded = jwtDecode(response.data.split(' ')[1]);
         const { _id, name } = decoded;
         localStorage.setItem('userId', _id);
         localStorage.setItem('userName', name);
+        onSubmitUser(decoded);
         this.setState({
           redirectFlag: true,
         });
@@ -140,7 +140,6 @@ class Login extends Component {
 const mapStateToProps = (state) => ({
   userId: state.id,
   userName: state.name,
-  userEmail: state.email,
 });
 
 const mapDispatchToProps = (dispatch) => ({

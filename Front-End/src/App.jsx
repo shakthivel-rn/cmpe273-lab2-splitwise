@@ -16,10 +16,10 @@ function App() {
   return (
     <div>
       <Route exact path="/" component={LandingPage} />
-      <Route exact path="/register" component={Register} />
-      <Route exact path="/login" component={Login} />
-      <Route exact path="/profilepage" component={Profilepage} />
-      <Route exact path="/creategroup" component={CreateGroup} />
+      <Route path="/register" component={Register} />
+      <Route path="/login" component={Login} />
+      <Route path="/profilepage" component={Profilepage} />
+      <Route path="/creategroup" component={CreateGroup} />
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/recentactivity" component={RecentActivity} />
       <Route path="/grouppage" component={GroupPage} />

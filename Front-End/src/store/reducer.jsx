@@ -1,15 +1,20 @@
+/* eslint-disable no-underscore-dangle */
 const initialState = {
   id: '',
   name: '',
-  email: '',
+  refreshBit: false,
 };
 
 const reducer = (state = initialState, action) => {
   if (action.type === 'REGISTER_USER') {
     return {
-      id: action.value.id,
+      id: action.value._id,
       name: action.value.name,
-      email: action.value.email,
+    };
+  }
+  if (action.type === 'RENDER') {
+    return {
+      refreshBit: action.value.modifiedRefreshBitLocal,
     };
   }
   if (action.type === 'REMOVE_USER') {

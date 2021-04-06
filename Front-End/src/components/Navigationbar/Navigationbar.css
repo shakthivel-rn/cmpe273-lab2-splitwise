@@ -28,3 +28,11 @@
     margin-right: 10px;
 }
 
+#dashboardLink {
+    color: rgb(238, 238, 238);
+}
+
+#dashboardLink:hover {
+    text-decoration: none;
+}
+

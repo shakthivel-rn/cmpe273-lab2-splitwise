@@ -155,13 +155,9 @@ router.get('/getComments', checkAuth, async (req, res) => {
 });
 
 router.post('/deleteComment', checkAuth, async (req, res) => {
-  console.log('Hello');
-  console.log(req.body.expenseId);
-  console.log(req.body.commentIndex);
   const expense = await Expenses.findOne({ _id: req.body.expenseId });
   expense.comments.splice(req.body.commentIndex, 1);
   await expense.save();
-  console.log(expense);
   res.send();
 });
 

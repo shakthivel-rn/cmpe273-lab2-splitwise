@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 /* eslint-disable no-underscore-dangle */
 import React, { Component } from 'react';
 import '../../App.css';
@@ -6,6 +7,7 @@ import {
 } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import { connect } from 'react-redux';
 
 class DashboardSideBar extends Component {
   constructor(props) {
@@ -15,6 +17,7 @@ class DashboardSideBar extends Component {
       groups: [],
       fadeFlag: false,
     };
+    this.getDashboardSidebarDetails = this.getDashboardSidebarDetails.bind(this);
   }
 
   async componentDidMount() {
@@ -27,8 +30,25 @@ class DashboardSideBar extends Component {
     });
   }
 
+  async getDashboardSidebarDetails() {
+    const { userId } = this.state;
+    axios.defaults.headers.common.authorization = localStorage.getItem('token');
+    const res = await axios.get('http://localhost:3001/dashboard/getGroupNames', { params: { userId } });
+    this.setState({
+      groups: [...res.data],
+      fadeFlag: true,
+    });
+  }
+
   render() {
     const { groups, fadeFlag } = this.state;
+    const { refreshBitLocal, onMyGroupsChange } = this.props;
+    if (refreshBitLocal) {
+      this.getDashboardSidebarDetails();
+      const modifiedRefreshBitLocal = !refreshBitLocal;
+      const modifiedRefreshBitLocalObject = { modifiedRefreshBitLocal };
+      onMyGroupsChange(modifiedRefreshBitLocalObject);
+    }
     const groupNames = groups.map((group) => (
       <ListGroup.Item>
         <Link to={{
@@ -70,4 +90,11 @@ class DashboardSideBar extends Component {
   }
 }
 
-export default DashboardSideBar;
+const mapStateToProps = (state) => ({
+  refreshBitLocal: state.refreshBit,
+});
+const mapDispatchToProps = (dispatch) => ({
+  onMyGroupsChange: (userData) => dispatch({ type: 'RENDER', value: userData }),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(DashboardSideBar);

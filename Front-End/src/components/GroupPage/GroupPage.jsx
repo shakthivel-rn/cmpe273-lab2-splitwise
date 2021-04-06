@@ -8,6 +8,7 @@ import {
 } from 'react-bootstrap';
 import axios from 'axios';
 import { BsXCircleFill } from 'react-icons/bs';
+import SweetAlert from 'react-bootstrap-sweetalert';
 import Navigationbar from '../Navigationbar/Navigationbar';
 import DashboardSideBar from '../Dashboard/DashboardSideBar';
 import AddExpenseForm from './AddExpenseForm';
@@ -28,6 +29,9 @@ class GroupPage extends Component {
       eventKey: 0,
       comment: '',
       comments: [],
+      expenseId: undefined,
+      commentIndex: undefined,
+      deleteFlag: false,
     };
     this.getGroupDetails = this.getGroupDetails.bind(this);
     this.getExpenseDetails = this.getExpenseDetails.bind(this);
@@ -113,7 +117,6 @@ class GroupPage extends Component {
       expenseId,
       commentIndex,
     };
-    console.log(data);
     axios.post('http://localhost:3001/groupPage/deleteComment', data)
       .then(() => {
         this.getExpenseDetails(expenseId);
@@ -127,7 +130,7 @@ class GroupPage extends Component {
   render() {
     const {
       groupId, groupName, groupDatas, isModalOpen, fadeFlag, authenticationToken,
-      expenseDatas, expenseFadeFlag, comments,
+      expenseDatas, expenseFadeFlag, comments, expenseId, commentIndex, deleteFlag,
     } = this.state;
     let { eventKey } = this.state;
     const groupDataList = [];
@@ -140,7 +143,11 @@ class GroupPage extends Component {
             {`${comment.userName}: ${comment.commentDetails}` }
             {'     '}
             <BsXCircleFill onClick={() => {
-              this.onDeleteComment(comment.expenseId, i);
+              this.setState({
+                expenseId: comment.expenseId,
+                commentIndex: i,
+                deleteFlag: true,
+              });
             }}
             />
           </ListGroup.Item>,
@@ -242,6 +249,27 @@ class GroupPage extends Component {
     return (
       <div>
         {!authenticationToken ? <Redirect to="/" /> : null}
+        {deleteFlag ? (
+          <SweetAlert
+            warning
+            showCancel
+            confirmBtnText="Yes, delete it!"
+            confirmBtnBsStyle="danger"
+            title="Are you sure?"
+            onConfirm={() => {
+              this.onDeleteComment(expenseId, commentIndex);
+              this.setState({
+                deleteFlag: false,
+              });
+            }}
+            onCancel={() => {
+              this.setState({
+                deleteFlag: false,
+              });
+            }}
+            focusCancelBtn
+          />
+        ) : null}
         <Navigationbar />
         <div className="container">
           <div className="groupcontainer">

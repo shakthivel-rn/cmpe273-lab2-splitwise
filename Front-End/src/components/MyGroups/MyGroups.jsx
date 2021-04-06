@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 /* eslint-disable no-underscore-dangle */
 import React, { Component } from 'react';
 import '../../App.css';
@@ -7,6 +8,7 @@ import {
   Container, Row, Col, ListGroup, Fade, Button,
 } from 'react-bootstrap';
 import axios from 'axios';
+import { connect } from 'react-redux';
 import SweetAlert from 'react-bootstrap-sweetalert';
 import Navigationbar from '../Navigationbar/Navigationbar';
 import DashboardSideBar from '../Dashboard/DashboardSideBar';
@@ -127,6 +129,10 @@ class MyGroups extends Component {
                 inviteFlag: false,
               });
               this.getMyGroupDetails();
+              const { refreshBitLocal, onMyGroupsChange } = this.props;
+              const modifiedRefreshBitLocal = !refreshBitLocal;
+              const modifiedRefreshBitLocalObject = { modifiedRefreshBitLocal };
+              onMyGroupsChange(modifiedRefreshBitLocalObject);
             }}
           />
         ) : null}
@@ -139,6 +145,10 @@ class MyGroups extends Component {
                 leaveGroupFlag: false,
               });
               this.getMyGroupDetails();
+              const { refreshBitLocal, onMyGroupsChange } = this.props;
+              const modifiedRefreshBitLocal = !refreshBitLocal;
+              const modifiedRefreshBitLocalObject = { modifiedRefreshBitLocal };
+              onMyGroupsChange(modifiedRefreshBitLocalObject);
             }}
           />
         ) : null}
@@ -198,4 +208,12 @@ class MyGroups extends Component {
   }
 }
 
-export default MyGroups;
+const mapStateToProps = (state) => ({
+  refreshBitLocal: state.refreshBit,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  onMyGroupsChange: (userData) => dispatch({ type: 'RENDER', value: userData }),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(MyGroups);
