@@ -7,6 +7,7 @@ import {
   Container, Row, Col, Button, Accordion, Modal, Fade, Card, ListGroup, Form,
 } from 'react-bootstrap';
 import axios from 'axios';
+import { BsXCircleFill } from 'react-icons/bs';
 import Navigationbar from '../Navigationbar/Navigationbar';
 import DashboardSideBar from '../Dashboard/DashboardSideBar';
 import AddExpenseForm from './AddExpenseForm';
@@ -32,6 +33,7 @@ class GroupPage extends Component {
     this.getExpenseDetails = this.getExpenseDetails.bind(this);
     this.handleChangeComment = this.handleChangeComment.bind(this);
     this.onSubmitComment = this.onSubmitComment.bind(this);
+    this.onDeleteComment = this.onDeleteComment.bind(this);
   }
 
   static getDerivedStateFromProps(nextProps) {
@@ -106,6 +108,18 @@ class GroupPage extends Component {
       });
   }
 
+  onDeleteComment = (expenseId, commentIndex) => {
+    const data = {
+      expenseId,
+      commentIndex,
+    };
+    console.log(data);
+    axios.post('http://localhost:3001/groupPage/deleteComment', data)
+      .then(() => {
+        this.getExpenseDetails(expenseId);
+      });
+  }
+
   openModal = () => this.setState({ isModalOpen: true });
 
   closeModal = () => this.setState({ isModalOpen: false });
@@ -119,12 +133,26 @@ class GroupPage extends Component {
     const groupDataList = [];
     const expenseDataList = [];
     const commentsDataList = [];
-    comments.forEach((comment) => {
-      commentsDataList.push(
-        <ListGroup.Item>
-          {`${comment.userName}: ${comment.commentDetails}` }
-        </ListGroup.Item>,
-      );
+    comments.forEach((comment, i) => {
+      if (comment.userName === 'You') {
+        commentsDataList.push(
+          <ListGroup.Item>
+            {`${comment.userName}: ${comment.commentDetails}` }
+            {'     '}
+            <BsXCircleFill onClick={() => {
+              this.onDeleteComment(comment.expenseId, i);
+            }}
+            />
+          </ListGroup.Item>,
+        );
+      } else {
+        commentsDataList.push(
+          <ListGroup.Item>
+            {`${comment.userName}: ${comment.commentDetails}` }
+            {'     '}
+          </ListGroup.Item>,
+        );
+      }
     });
     expenseDatas.forEach((expenseData) => {
       if (expenseData.status === 'added') {

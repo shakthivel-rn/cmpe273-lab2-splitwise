@@ -139,17 +139,30 @@ router.get('/getComments', checkAuth, async (req, res) => {
     if (comment.userName === user.name) {
       return (
         {
+          expenseId: expense._id,
           userName: 'You',
           commentDetails: comment.commentDetails,
         }
       );
     }
     return ({
+      expenseId: expense._id,
       userName: comment.userName,
       commentDetails: comment.commentDetails,
     });
   });
   res.send(result);
+});
+
+router.post('/deleteComment', checkAuth, async (req, res) => {
+  console.log('Hello');
+  console.log(req.body.expenseId);
+  console.log(req.body.commentIndex);
+  const expense = await Expenses.findOne({ _id: req.body.expenseId });
+  expense.comments.splice(req.body.commentIndex, 1);
+  await expense.save();
+  console.log(expense);
+  res.send();
 });
 
 module.exports = router;
