@@ -1,14 +1,13 @@
 /* eslint-disable react/prop-types */
 import React, { Component } from 'react';
 import axios from 'axios';
+import { connect } from 'react-redux';
 import '../../App.css';
 import './Navigationbar.css';
 import { Link } from 'react-router-dom';
 import {
   Navbar, Nav, Button, Dropdown, Image,
 } from 'react-bootstrap';
-// import { connect } from 'react-redux';
-// import { propTypes } from 'react-bootstrap/esm/Image';
 
 class Navigationbar extends Component {
   constructor(props) {
@@ -26,13 +25,6 @@ class Navigationbar extends Component {
     this.getUserProfileImage();
   }
 
-  componentDidUpdate(prevProps) {
-    const { refreshBit } = this.props;
-    if (prevProps.refreshBit !== refreshBit) {
-      this.getUserProfileImage();
-    }
-  }
-
   getUserProfileImage = async () => {
     const { userId } = this.state;
     const res = await axios.get('http://localhost:3001/profilePage/getImage', { params: { userId } });
@@ -43,14 +35,19 @@ class Navigationbar extends Component {
 
   handleLogout = () => {
     localStorage.removeItem('token');
-    // const { onLogoutUser } = this.props;
-    // onLogoutUser();
   }
 
   render() {
     let navLogin = null;
     let profileImage = null;
     const { authenticationToken, imagePreview } = this.state;
+    const { refreshBitLocal, onProfileImageUploadAction } = this.props;
+    if (refreshBitLocal) {
+      this.getUserProfileImage();
+      const modifiedRefreshBitLocal = !refreshBitLocal;
+      const modifiedRefreshBitLocalObject = { modifiedRefreshBitLocal };
+      onProfileImageUploadAction(modifiedRefreshBitLocalObject);
+    }
     if (authenticationToken) {
       profileImage = <Image src={imagePreview} width={70} roundedCircle />;
     }
@@ -124,15 +121,11 @@ class Navigationbar extends Component {
   }
 }
 
-/* const mapDispatchToProps = (dispatch) => ({
-  onLogoutUser: () => dispatch({ type: 'REMOVE_USER' }),
+const mapStateToProps = (state) => ({
+  refreshBitLocal: state.refreshBitProfileImage,
 });
 
-Navigationbar.defaultProps = {
-  onLogoutUser: () => {},
-};
-
-Navigationbar.propTypes = {
-  onLogoutUser: propTypes.func,
-}; */
-export default Navigationbar;
+const mapDispatchToProps = (dispatch) => ({
+  onProfileImageUploadAction: (userData) => dispatch({ type: 'RENDER_PROFILE_IMAGE', value: userData }),
+});
+export default connect(mapStateToProps, mapDispatchToProps)(Navigationbar);

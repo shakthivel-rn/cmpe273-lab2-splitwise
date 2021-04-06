@@ -26,7 +26,6 @@ class Profilepage extends Component {
       fadeFlag: false,
       errorMessage: '',
       authenticationToken: localStorage.getItem('token'),
-      refreshBit: false,
     };
     this.handleChangeName = this.handleChangeName.bind(this);
     this.handleChangeEmail = this.handleChangeEmail.bind(this);
@@ -40,7 +39,6 @@ class Profilepage extends Component {
     this.editDefaultCurrency = this.editDefaultCurrency.bind(this);
     this.editTimeZone = this.editTimeZone.bind(this);
     this.editLanguage = this.editLanguage.bind(this);
-    this.handleChange = this.handleChange.bind(this);
   }
 
   async componentDidMount() {
@@ -57,14 +55,6 @@ class Profilepage extends Component {
       fadeFlag: true,
       submitFlag: false,
       errorFlag: false,
-    });
-  }
-
-  handleChange() {
-    const { refreshBit } = this.state;
-    const newRefreshBit = !refreshBit;
-    this.setState({
-      refreshBit: newRefreshBit,
     });
   }
 
@@ -209,7 +199,7 @@ class Profilepage extends Component {
   render() {
     const {
       name, email, phone, defaultcurrency, timezone, language,
-      fadeFlag, submitFlag, errorFlag, errorMessage, authenticationToken, refreshBit,
+      fadeFlag, submitFlag, errorFlag, errorMessage, authenticationToken,
     } = this.state;
     return (
       <div>
@@ -236,7 +226,7 @@ class Profilepage extends Component {
           />
         ) : null}
         { !authenticationToken ? <Redirect to="/" /> : null }
-        <Navigationbar refreshBit={refreshBit} />
+        <Navigationbar />
         <div className="container">
           <div className="profilepage">
             <h1>Your Account</h1>
@@ -246,7 +236,7 @@ class Profilepage extends Component {
                   <div>
                     <Row>
                       <Col lg={3}>
-                        <ProfileImage handleChange={this.handleChange} />
+                        <ProfileImage />
                       </Col>
                       <Col>
                         <p>Your Name</p>

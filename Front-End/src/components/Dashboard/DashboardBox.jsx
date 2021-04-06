@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 /* eslint-disable no-underscore-dangle */
 import React, { useEffect, useState } from 'react';
 import '../../App.css';
@@ -6,6 +7,7 @@ import {
   Row, Col, Button, Fade, Modal, ListGroup,
 } from 'react-bootstrap';
 import axios from 'axios';
+import { connect } from 'react-redux';
 import SweetAlert from 'react-bootstrap-sweetalert';
 
 function Dashboardbox(props) {
@@ -78,8 +80,10 @@ function Dashboardbox(props) {
   const closeModal = () => {
     setModalOpen(false);
     getPaidAndOwedAmount();
-    // eslint-disable-next-line react/prop-types
-    props.handleChange();
+    const { refreshBitLocal, onSettleUpAction } = props;
+    const modifiedRefreshBitLocal = !refreshBitLocal;
+    const modifiedRefreshBitLocalObject = { modifiedRefreshBitLocal };
+    onSettleUpAction(modifiedRefreshBitLocalObject);
   };
 
   return (
@@ -160,4 +164,12 @@ function Dashboardbox(props) {
   );
 }
 
-export default Dashboardbox;
+const mapStateToProps = (state) => ({
+  refreshBitLocal: state.refreshBitYouOwe,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  onSettleUpAction: (userData) => dispatch({ type: 'RENDER_YOU_OWE', value: userData }),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Dashboardbox);

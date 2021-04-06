@@ -5,6 +5,7 @@ import { Form, Button, Figure } from 'react-bootstrap';
 import '../../App.css';
 import './ProfileImage.css';
 import axios from 'axios';
+import { connect } from 'react-redux';
 import SweetAlert from 'react-bootstrap-sweetalert';
 
 class ProfileImage extends Component {
@@ -77,8 +78,10 @@ class ProfileImage extends Component {
                   this.setState({
                     imageUploadedFlag: true,
                   });
-                  const { handleChange } = this.props;
-                  handleChange();
+                  const { refreshBitLocal, onProfileImageUploadAction } = this.props;
+                  const modifiedRefreshBitLocal = !refreshBitLocal;
+                  const modifiedRefreshBitLocalObject = { modifiedRefreshBitLocal };
+                  onProfileImageUploadAction(modifiedRefreshBitLocalObject);
                 });
 
               console.log(typeof fileLocation);
@@ -136,4 +139,12 @@ class ProfileImage extends Component {
   }
 }
 
-export default ProfileImage;
+const mapStateToProps = (state) => ({
+  refreshBitLocal: state.refreshBitProfileImage,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  onProfileImageUploadAction: (userData) => dispatch({ type: 'RENDER_PROFILE_IMAGE', value: userData }),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(ProfileImage);

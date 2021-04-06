@@ -1,8 +1,9 @@
 /* eslint-disable react/prop-types */
-import axios from 'axios';
 import React, { Component } from 'react';
 import '../../App.css';
 import './YouOwe.css';
+import axios from 'axios';
+import { connect } from 'react-redux';
 import {
   ListGroup, Fade,
 } from 'react-bootstrap';
@@ -22,13 +23,6 @@ class YouOwe extends Component {
     this.getYouAreOwedDetails();
   }
 
-  componentDidUpdate(prevProps) {
-    const { refreshBit } = this.props;
-    if (prevProps.refreshBit !== refreshBit) {
-      this.getYouAreOwedDetails();
-    }
-  }
-
   async getYouAreOwedDetails() {
     const { userId } = this.state;
     const res = await axios.get('http://localhost:3001/dashboard/getIndividualOwedAmount', { params: { userId } });
@@ -41,6 +35,13 @@ class YouOwe extends Component {
   render() {
     const { youowes, fadeFlag } = this.state;
     const youowelist = youowes.map((youowe) => <ListGroup.Item>{`You owe ${youowe.paidUserName} ${youowe.individualOwedAmount}$ in ${youowe.groupName}` }</ListGroup.Item>);
+    const { refreshBitLocal, onSettleUpAction } = this.props;
+    if (refreshBitLocal) {
+      this.getYouAreOwedDetails();
+      const modifiedRefreshBitLocal = !refreshBitLocal;
+      const modifiedRefreshBitLocalObject = { modifiedRefreshBitLocal };
+      onSettleUpAction(modifiedRefreshBitLocalObject);
+    }
     return (
       <div>
         <div id="youowecontainer">
@@ -60,4 +61,12 @@ class YouOwe extends Component {
   }
 }
 
-export default YouOwe;
+const mapStateToProps = (state) => ({
+  refreshBitLocal: state.refreshBitYouOwe,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  onSettleUpAction: (userData) => dispatch({ type: 'RENDER_YOU_OWE', value: userData }),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(YouOwe);
