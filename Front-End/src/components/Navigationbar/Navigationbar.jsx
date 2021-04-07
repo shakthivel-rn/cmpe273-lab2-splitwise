@@ -41,11 +41,13 @@ class Navigationbar extends Component {
     let navLogin = null;
     let profileImage = null;
     const { authenticationToken, imagePreview } = this.state;
-    const { refreshBitLocal, onProfileImageUploadAction } = this.props;
+    const {
+      userIdRedux, userNameRedux, refreshBitLocal, onProfileImageUploadAction,
+    } = this.props;
     if (refreshBitLocal) {
       this.getUserProfileImage();
       const modifiedRefreshBitLocal = !refreshBitLocal;
-      const modifiedRefreshBitLocalObject = { modifiedRefreshBitLocal };
+      const modifiedRefreshBitLocalObject = { userIdRedux, userNameRedux, modifiedRefreshBitLocal };
       onProfileImageUploadAction(modifiedRefreshBitLocalObject);
     }
     if (authenticationToken) {
@@ -122,10 +124,13 @@ class Navigationbar extends Component {
 }
 
 const mapStateToProps = (state) => ({
+  userIdRedux: state.id,
+  userNameRedux: state.name,
   refreshBitLocal: state.refreshBitProfileImage,
 });
 
 const mapDispatchToProps = (dispatch) => ({
   onProfileImageUploadAction: (userData) => dispatch({ type: 'RENDER_PROFILE_IMAGE', value: userData }),
 });
+
 export default connect(mapStateToProps, mapDispatchToProps)(Navigationbar);

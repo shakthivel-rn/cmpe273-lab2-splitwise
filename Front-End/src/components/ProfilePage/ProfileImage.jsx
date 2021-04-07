@@ -11,8 +11,9 @@ import SweetAlert from 'react-bootstrap-sweetalert';
 class ProfileImage extends Component {
   constructor(props) {
     super(props);
+    const { userIdRedux } = props;
     this.state = {
-      userId: localStorage.getItem('userId'),
+      userId: userIdRedux,
       selectedFile: null,
       imagePreview: null,
       imageUploadedFlag: false,
@@ -78,9 +79,15 @@ class ProfileImage extends Component {
                   this.setState({
                     imageUploadedFlag: true,
                   });
-                  const { refreshBitLocal, onProfileImageUploadAction } = this.props;
+                  const {
+                    userIdRedux, userNameRedux, refreshBitLocal, onProfileImageUploadAction,
+                  } = this.props;
                   const modifiedRefreshBitLocal = !refreshBitLocal;
-                  const modifiedRefreshBitLocalObject = { modifiedRefreshBitLocal };
+                  const modifiedRefreshBitLocalObject = {
+                    userIdRedux,
+                    userNameRedux,
+                    modifiedRefreshBitLocal,
+                  };
                   onProfileImageUploadAction(modifiedRefreshBitLocalObject);
                 });
 
@@ -140,6 +147,8 @@ class ProfileImage extends Component {
 }
 
 const mapStateToProps = (state) => ({
+  userIdRedux: state.id,
+  userNameRedux: state.name,
   refreshBitLocal: state.refreshBitProfileImage,
 });
 

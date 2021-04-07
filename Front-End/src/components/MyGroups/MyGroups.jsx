@@ -16,8 +16,9 @@ import DashboardSideBar from '../Dashboard/DashboardSideBar';
 class MyGroups extends Component {
   constructor(props) {
     super(props);
+    const { userIdRedux } = props;
     this.state = {
-      userId: localStorage.getItem('userId'),
+      userId: userIdRedux,
       inviteList: [],
       fadeFlag: false,
       inviteFlag: false,
@@ -129,9 +130,15 @@ class MyGroups extends Component {
                 inviteFlag: false,
               });
               this.getMyGroupDetails();
-              const { refreshBitLocal, onMyGroupsChange } = this.props;
+              const {
+                userIdRedux, userNameRedux, refreshBitLocal, onMyGroupsChange,
+              } = this.props;
               const modifiedRefreshBitLocal = !refreshBitLocal;
-              const modifiedRefreshBitLocalObject = { modifiedRefreshBitLocal };
+              const modifiedRefreshBitLocalObject = {
+                userIdRedux,
+                userNameRedux,
+                modifiedRefreshBitLocal,
+              };
               onMyGroupsChange(modifiedRefreshBitLocalObject);
             }}
           />
@@ -145,9 +152,15 @@ class MyGroups extends Component {
                 leaveGroupFlag: false,
               });
               this.getMyGroupDetails();
-              const { refreshBitLocal, onMyGroupsChange } = this.props;
+              const {
+                userIdRedux, userNameRedux, refreshBitLocal, onMyGroupsChange,
+              } = this.props;
               const modifiedRefreshBitLocal = !refreshBitLocal;
-              const modifiedRefreshBitLocalObject = { modifiedRefreshBitLocal };
+              const modifiedRefreshBitLocalObject = {
+                userIdRedux,
+                userNameRedux,
+                modifiedRefreshBitLocal,
+              };
               onMyGroupsChange(modifiedRefreshBitLocalObject);
             }}
           />
@@ -209,6 +222,8 @@ class MyGroups extends Component {
 }
 
 const mapStateToProps = (state) => ({
+  userIdRedux: state.id,
+  userNameRedux: state.name,
   refreshBitLocal: state.refreshBit,
 });
 

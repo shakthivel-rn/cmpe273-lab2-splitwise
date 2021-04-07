@@ -11,8 +11,9 @@ import {
 class YouOwe extends Component {
   constructor(props) {
     super(props);
+    const { userIdRedux } = props;
     this.state = {
-      userId: localStorage.getItem('userId'),
+      userId: userIdRedux,
       youowes: [],
       fadeFlag: false,
     };
@@ -35,11 +36,13 @@ class YouOwe extends Component {
   render() {
     const { youowes, fadeFlag } = this.state;
     const youowelist = youowes.map((youowe) => <ListGroup.Item>{`You owe ${youowe.paidUserName} ${youowe.individualOwedAmount}$ in ${youowe.groupName}` }</ListGroup.Item>);
-    const { refreshBitLocal, onSettleUpAction } = this.props;
+    const {
+      userIdRedux, userNameRedux, refreshBitLocal, onSettleUpAction,
+    } = this.props;
     if (refreshBitLocal) {
       this.getYouAreOwedDetails();
       const modifiedRefreshBitLocal = !refreshBitLocal;
-      const modifiedRefreshBitLocalObject = { modifiedRefreshBitLocal };
+      const modifiedRefreshBitLocalObject = { userIdRedux, userNameRedux, modifiedRefreshBitLocal };
       onSettleUpAction(modifiedRefreshBitLocalObject);
     }
     return (
@@ -62,6 +65,8 @@ class YouOwe extends Component {
 }
 
 const mapStateToProps = (state) => ({
+  userIdRedux: state.id,
+  userNameRedux: state.name,
   refreshBitLocal: state.refreshBitYouOwe,
 });
 

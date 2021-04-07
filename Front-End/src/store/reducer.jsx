@@ -16,16 +16,22 @@ const reducer = (state = initialState, action) => {
   }
   if (action.type === 'RENDER') {
     return {
+      id: action.value.userIdRedux,
+      name: action.value.userNameRedux,
       refreshBit: action.value.modifiedRefreshBitLocal,
     };
   }
   if (action.type === 'RENDER_YOU_OWE') {
     return {
+      id: action.value.userIdRedux,
+      name: action.value.userNameRedux,
       refreshBitYouOwe: action.value.modifiedRefreshBitLocal,
     };
   }
   if (action.type === 'RENDER_PROFILE_IMAGE') {
     return {
+      id: action.value.userIdRedux,
+      name: action.value.userNameRedux,
       refreshBitProfileImage: action.value.modifiedRefreshBitLocal,
     };
   }

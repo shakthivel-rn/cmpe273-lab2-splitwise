@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React, { Component } from 'react';
 import '../../App.css';
 import './CreateGroup.css';
@@ -6,14 +7,16 @@ import {
   Container, Row, Col, Form, Figure, Button, Fade,
 } from 'react-bootstrap';
 import axios from 'axios';
+import { connect } from 'react-redux';
 import SweetAlert from 'react-bootstrap-sweetalert';
 import Navigationbar from '../Navigationbar/Navigationbar';
 
 class CreateGroup extends Component {
   constructor(props) {
     super(props);
+    const { userIdRedux } = props;
     this.state = {
-      userId: localStorage.getItem('userId'),
+      userId: userIdRedux,
       groupName: '',
       inputs: ['Enter Group Member Email'],
       memberEmails: [],
@@ -188,4 +191,8 @@ class CreateGroup extends Component {
   }
 }
 
-export default CreateGroup;
+const mapStateToProps = (state) => ({
+  userIdRedux: state.id,
+});
+
+export default connect(mapStateToProps)(CreateGroup);

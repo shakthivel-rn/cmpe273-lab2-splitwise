@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
 import React, { Component } from 'react';
 import '../../App.css';
@@ -7,6 +8,7 @@ import {
   Container, Row, Col, Button, Accordion, Modal, Fade, Card, ListGroup, Form,
 } from 'react-bootstrap';
 import axios from 'axios';
+import { connect } from 'react-redux';
 import { BsXCircleFill } from 'react-icons/bs';
 import SweetAlert from 'react-bootstrap-sweetalert';
 import Navigationbar from '../Navigationbar/Navigationbar';
@@ -16,8 +18,9 @@ import AddExpenseForm from './AddExpenseForm';
 class GroupPage extends Component {
   constructor(props) {
     super(props);
+    const { userIdRedux } = props;
     this.state = {
-      userId: localStorage.getItem('userId'),
+      userId: userIdRedux,
       groupId: 0,
       groupName: '',
       groupDatas: [],
@@ -322,4 +325,8 @@ class GroupPage extends Component {
   }
 }
 
-export default GroupPage;
+const mapStateToProps = (state) => ({
+  userIdRedux: state.id,
+});
+
+export default connect(mapStateToProps)(GroupPage);

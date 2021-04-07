@@ -1,7 +1,9 @@
+/* eslint-disable react/prop-types */
 import React, { Component } from 'react';
 import '../../App.css';
 import './AddExpenseForm.css';
 import axios from 'axios';
+import { connect } from 'react-redux';
 import {
   Button, Form,
 } from 'react-bootstrap';
@@ -10,10 +12,10 @@ import SweetAlert from 'react-bootstrap-sweetalert';
 class AddExpenseForm extends Component {
   constructor(props) {
     super(props);
-    // eslint-disable-next-line react/prop-types
+    const { userIdRedux } = props;
     const { groupId, getGroupDetails } = props;
     this.state = {
-      userId: localStorage.getItem('userId'),
+      userId: userIdRedux,
       groupId,
       getGroupDetails,
       expenseDescription: '',
@@ -94,4 +96,8 @@ class AddExpenseForm extends Component {
   }
 }
 
-export default AddExpenseForm;
+const mapStateToProps = (state) => ({
+  userIdRedux: state.id,
+});
+
+export default connect(mapStateToProps)(AddExpenseForm);

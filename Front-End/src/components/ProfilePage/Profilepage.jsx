@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 /* eslint-disable no-underscore-dangle */
 import React, { Component } from 'react';
 import '../../App.css';
@@ -7,6 +8,7 @@ import {
   Container, Row, Col, Form, Button, Fade,
 } from 'react-bootstrap';
 import axios from 'axios';
+import { connect } from 'react-redux';
 import SweetAlert from 'react-bootstrap-sweetalert';
 import Navigationbar from '../Navigationbar/Navigationbar';
 import ProfileImage from './ProfileImage';
@@ -14,9 +16,10 @@ import ProfileImage from './ProfileImage';
 class Profilepage extends Component {
   constructor(props) {
     super(props);
-    const userId = localStorage.getItem('userId');
+    const { userIdRedux } = props;
+    // const userId = localStorage.getItem('userId');
     this.state = {
-      userId,
+      userId: userIdRedux,
       name: 'Your Name',
       email: 'Your Email',
       phone: 'Your Phonenumber',
@@ -335,4 +338,8 @@ class Profilepage extends Component {
   }
 }
 
-export default Profilepage;
+const mapStateToProps = (state) => ({
+  userIdRedux: state.id,
+});
+
+export default connect(mapStateToProps)(Profilepage);

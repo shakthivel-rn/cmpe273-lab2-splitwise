@@ -12,8 +12,9 @@ import { connect } from 'react-redux';
 class DashboardSideBar extends Component {
   constructor(props) {
     super(props);
+    const { userIdRedux } = props;
     this.state = {
-      userId: localStorage.getItem('userId'),
+      userId: userIdRedux,
       groups: [],
       fadeFlag: false,
     };
@@ -42,11 +43,13 @@ class DashboardSideBar extends Component {
 
   render() {
     const { groups, fadeFlag } = this.state;
-    const { refreshBitLocal, onMyGroupsChange } = this.props;
+    const {
+      userIdRedux, userNameRedux, refreshBitLocal, onMyGroupsChange,
+    } = this.props;
     if (refreshBitLocal) {
       this.getDashboardSidebarDetails();
       const modifiedRefreshBitLocal = !refreshBitLocal;
-      const modifiedRefreshBitLocalObject = { modifiedRefreshBitLocal };
+      const modifiedRefreshBitLocalObject = { userIdRedux, userNameRedux, modifiedRefreshBitLocal };
       onMyGroupsChange(modifiedRefreshBitLocalObject);
     }
     const groupNames = groups.map((group) => (
@@ -91,6 +94,8 @@ class DashboardSideBar extends Component {
 }
 
 const mapStateToProps = (state) => ({
+  userIdRedux: state.id,
+  userNameRedux: state.name,
   refreshBitLocal: state.refreshBit,
 });
 const mapDispatchToProps = (dispatch) => ({

@@ -1,3 +1,4 @@
+/* eslint-disable react/destructuring-assignment */
 /* eslint-disable react/prop-types */
 /* eslint-disable no-underscore-dangle */
 import React, { useEffect, useState } from 'react';
@@ -11,7 +12,7 @@ import { connect } from 'react-redux';
 import SweetAlert from 'react-bootstrap-sweetalert';
 
 function Dashboardbox(props) {
-  const [userId] = useState(localStorage.getItem('userId'));
+  const [userId] = useState(props.userIdRedux);
   const [totalBalance, setTotalBalance] = useState(0);
   const [youOwe, setYouOwe] = useState(0);
   const [youAreOwed, setYouAreOwed] = useState(0);
@@ -80,9 +81,11 @@ function Dashboardbox(props) {
   const closeModal = () => {
     setModalOpen(false);
     getPaidAndOwedAmount();
-    const { refreshBitLocal, onSettleUpAction } = props;
+    const {
+      userIdRedux, userNameRedux, refreshBitLocal, onSettleUpAction,
+    } = props;
     const modifiedRefreshBitLocal = !refreshBitLocal;
-    const modifiedRefreshBitLocalObject = { modifiedRefreshBitLocal };
+    const modifiedRefreshBitLocalObject = { userIdRedux, userNameRedux, modifiedRefreshBitLocal };
     onSettleUpAction(modifiedRefreshBitLocalObject);
   };
 
@@ -165,6 +168,8 @@ function Dashboardbox(props) {
 }
 
 const mapStateToProps = (state) => ({
+  userIdRedux: state.id,
+  userNameRedux: state.name,
   refreshBitLocal: state.refreshBitYouOwe,
 });
 

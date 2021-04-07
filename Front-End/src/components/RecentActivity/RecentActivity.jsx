@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React, { Component } from 'react';
 import '../../App.css';
 import './RecentActivity.css';
@@ -6,14 +7,16 @@ import {
   Container, Row, Col, ListGroup, Fade, Pagination, Form,
 } from 'react-bootstrap';
 import axios from 'axios';
+import { connect } from 'react-redux';
 import Navigationbar from '../Navigationbar/Navigationbar';
 import DashboardSideBar from '../Dashboard/DashboardSideBar';
 
 class RecentActivity extends Component {
   constructor(props) {
     super(props);
+    const { userIdRedux } = props;
     this.state = {
-      userId: localStorage.getItem('userId'),
+      userId: userIdRedux,
       recentactivitylogs: [],
       fadeFlag: false,
       authenticationToken: localStorage.getItem('token'),
@@ -162,4 +165,8 @@ class RecentActivity extends Component {
   }
 }
 
-export default RecentActivity;
+const mapStateToProps = (state) => ({
+  userIdRedux: state.id,
+});
+
+export default connect(mapStateToProps)(RecentActivity);

@@ -1,7 +1,9 @@
-import axios from 'axios';
+/* eslint-disable react/prop-types */
 import React, { Component } from 'react';
 import '../../App.css';
 import './YouAreOwed.css';
+import axios from 'axios';
+import { connect } from 'react-redux';
 import {
   ListGroup, Fade,
 } from 'react-bootstrap';
@@ -9,8 +11,9 @@ import {
 class YouAreOwed extends Component {
   constructor(props) {
     super(props);
+    const { userIdRedux } = props;
     this.state = {
-      userId: localStorage.getItem('userId'),
+      userId: userIdRedux,
       owed: [],
       fadeFlag: false,
     };
@@ -47,5 +50,8 @@ class YouAreOwed extends Component {
     );
   }
 }
+const mapStateToProps = (state) => ({
+  userIdRedux: state.id,
+});
 
-export default YouAreOwed;
+export default connect(mapStateToProps)(YouAreOwed);
