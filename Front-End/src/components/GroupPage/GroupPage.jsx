@@ -143,8 +143,10 @@ class GroupPage extends Component {
       if (comment.userName === 'You') {
         commentsDataList.push(
           <ListGroup.Item>
-            {`${comment.userName}: ${comment.commentDetails}` }
-            {'     '}
+            <Form.Control className="commentItems" readOnly as="textarea" rows={3}>
+              {`${comment.userName} ${comment.commentDate.slice(0, 10)} 
+${comment.commentDetails}  ` }
+            </Form.Control>
             <BsXCircleFill onClick={() => {
               this.setState({
                 expenseId: comment.expenseId,
@@ -158,8 +160,10 @@ class GroupPage extends Component {
       } else {
         commentsDataList.push(
           <ListGroup.Item>
-            {`${comment.userName}: ${comment.commentDetails}` }
-            {'     '}
+            <Form.Control className="commentItems" readOnly as="textarea" rows={3}>
+              {`${comment.userName} ${comment.commentDate.slice(0, 10)} 
+${comment.commentDetails}  ` }
+            </Form.Control>
           </ListGroup.Item>,
         );
       }
@@ -226,7 +230,9 @@ class GroupPage extends Component {
                       <Row>
                         <Col>
                           <ListGroup variant="flush">
-                            {commentsDataList}
+                            {commentsDataList.length === 0 ? <p>No comments</p> : (
+                              commentsDataList
+                            )}
                             {' '}
                           </ListGroup>
                         </Col>
@@ -311,7 +317,11 @@ class GroupPage extends Component {
                   <Row>
                     <Fade in={fadeFlag}>
                       <div id="groupcontent">
-                        <Accordion id="accordian">{groupDataList}</Accordion>
+                        <Accordion id="accordian">
+                          {groupDataList.length === 0 ? <p>No expense created</p> : (
+                            groupDataList
+                          )}
+                        </Accordion>
                       </div>
                     </Fade>
                   </Row>

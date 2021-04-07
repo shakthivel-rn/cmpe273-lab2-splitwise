@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 /* eslint-disable react/prop-types */
 import React, { Component } from 'react';
 import '../../App.css';
@@ -23,23 +24,38 @@ class RecentActivity extends Component {
       paginationNumber: 0,
       pageSize: 2,
       active: 1,
+      order: 'desc',
+      groupList: [],
+      selectedGroup: 'All',
     };
     this.onPageSizeChange = this.onPageSizeChange.bind(this);
     this.onPageChange = this.onPageChange.bind(this);
+    this.onOrderChange = this.onOrderChange.bind(this);
+    this.onGroupChange = this.onGroupChange.bind(this);
   }
 
   async componentDidMount() {
-    const { userId, pageSize } = this.state;
+    const {
+      userId, pageSize, order, selectedGroup,
+    } = this.state;
     const pageNumber = 1;
-    const res = await axios.get('http://localhost:3001/recentActivity', { params: { userId, pageNumber, pageSize } });
+    const res = await axios.get('http://localhost:3001/recentActivity', {
+      params: {
+        userId, pageNumber, pageSize, order, selectedGroup,
+      },
+    });
     const { recentactivitylogs } = this.state;
     this.setState({
       recentactivitylogs: recentactivitylogs.concat(res.data),
       fadeFlag: true,
     });
-    const response = await axios.get('http://localhost:3001/recentActivity/getPaginationNumbers', { params: { userId, pageSize } });
+    const response = await axios.get('http://localhost:3001/recentActivity/getPaginationNumbers', { params: { userId, pageSize, selectedGroup } });
     this.setState({
       paginationNumber: response.data.paginationNumber,
+    });
+    const groupNames = await axios.get('http://localhost:3001/dashboard/getGroupNames', { params: { userId } });
+    this.setState({
+      groupList: [...groupNames.data],
     });
   }
 
@@ -48,16 +64,23 @@ class RecentActivity extends Component {
       pageSize: e.target.value,
       fadeFlag: false,
     });
-    const { userId, pageSize } = this.state;
-    const res = await axios.get('http://localhost:3001/recentActivity/getPaginationNumbers', { params: { userId, pageSize } });
+    const {
+      userId, pageSize, order, selectedGroup,
+    } = this.state;
+    const res = await axios.get('http://localhost:3001/recentActivity/getPaginationNumbers', { params: { userId, pageSize, selectedGroup } });
     this.setState({
       paginationNumber: res.data.paginationNumber,
     });
     const pageNumber = 1;
-    const response = await axios.get('http://localhost:3001/recentActivity', { params: { userId, pageNumber, pageSize } });
+    const response = await axios.get('http://localhost:3001/recentActivity', {
+      params: {
+        userId, pageNumber, pageSize, order, selectedGroup,
+      },
+    });
     this.setState({
       recentactivitylogs: [...response.data],
       fadeFlag: true,
+      active: pageNumber,
     });
   }
 
@@ -65,9 +88,15 @@ class RecentActivity extends Component {
     await this.setState({
       fadeFlag: false,
     });
-    const { userId, pageSize } = this.state;
+    const {
+      userId, pageSize, order, selectedGroup,
+    } = this.state;
     const pageNumber = pagenumber;
-    const res = await axios.get('http://localhost:3001/recentActivity', { params: { userId, pageNumber, pageSize } });
+    const res = await axios.get('http://localhost:3001/recentActivity', {
+      params: {
+        userId, pageNumber, pageSize, order, selectedGroup,
+      },
+    });
     this.setState({
       recentactivitylogs: [...res.data],
       fadeFlag: true,
@@ -75,11 +104,63 @@ class RecentActivity extends Component {
     });
   }
 
+  onOrderChange = async (e) => {
+    await this.setState({
+      order: e.target.value,
+      fadeFlag: false,
+    });
+    const {
+      userId, pageSize, order, selectedGroup,
+    } = this.state;
+    const pageNumber = 1;
+    const response = await axios.get('http://localhost:3001/recentActivity', {
+      params: {
+        userId, pageNumber, pageSize, order, selectedGroup,
+      },
+    });
+    this.setState({
+      recentactivitylogs: [...response.data],
+      fadeFlag: true,
+      active: pageNumber,
+    });
+  }
+
+  onGroupChange = async (e) => {
+    await this.setState({
+      selectedGroup: e.target.value,
+      fadeFlag: false,
+    });
+    const {
+      userId, pageSize, order, selectedGroup,
+    } = this.state;
+    const res = await axios.get('http://localhost:3001/recentActivity/getPaginationNumbers', { params: { userId, pageSize, selectedGroup } });
+    this.setState({
+      paginationNumber: res.data.paginationNumber,
+    });
+    const pageNumber = 1;
+    const response = await axios.get('http://localhost:3001/recentActivity', {
+      params: {
+        userId, pageNumber, pageSize, order, selectedGroup,
+      },
+    });
+    this.setState({
+      recentactivitylogs: [...response.data],
+      fadeFlag: true,
+      active: pageNumber,
+    });
+  }
+
   render() {
     const {
-      recentactivitylogs, fadeFlag, authenticationToken, paginationNumber,
+      recentactivitylogs, fadeFlag, authenticationToken, paginationNumber, groupList,
     } = this.state;
-
+    const groupListDetails = [];
+    groupListDetails.push(<option value="All">All</option>);
+    groupList.forEach((groupItem) => {
+      groupListDetails.push(
+        <option value={groupItem.name}>{groupItem.name}</option>,
+      );
+    });
     const recentactivityloglist = [];
     recentactivitylogs.forEach((recentactivitylog) => {
       if (recentactivitylog.status === 'added') {
@@ -136,12 +217,27 @@ class RecentActivity extends Component {
                     <Col>
                       <h3 id="recentactivitytitle">Recent Activity</h3>
                     </Col>
-                    <Col>
+                  </Row>
+                  <Row>
+                    <Col xs={2}>
                       <Form.Label>Page Size</Form.Label>
                       <Form.Control as="select" defaultValue={2} onChange={this.onPageSizeChange}>
                         <option value={2}>2</option>
                         <option value={5}>5</option>
                         <option value={10}>10</option>
+                      </Form.Control>
+                    </Col>
+                    <Col xs={4}>
+                      <Form.Label>Order</Form.Label>
+                      <Form.Control as="select" defaultValue="desc" onChange={this.onOrderChange}>
+                        <option value="desc">Most Recent First</option>
+                        <option value="asc">Most Recent Last</option>
+                      </Form.Control>
+                    </Col>
+                    <Col xs={4}>
+                      <Form.Label>Groups</Form.Label>
+                      <Form.Control as="select" defaultValue="All" onChange={this.onGroupChange}>
+                        {groupListDetails}
                       </Form.Control>
                     </Col>
                   </Row>

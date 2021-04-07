@@ -57,3 +57,7 @@
     background-color: rgb(255, 81, 0);
     border-color:   rgb(255, 81, 0);
 }
+
+.commentItems {
+    margin-right: 30px;
+}

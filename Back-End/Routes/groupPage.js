@@ -9,7 +9,7 @@ const router = express.Router();
 
 router.get('/', checkAuth, async (req, res) => {
   const transactions = await Transactions.find({ groupName: req.query.groupName },
-    { expenseId: 1, expenseDescription: 1 });
+    { expenseId: 1, expenseDescription: 1 }).sort({ time: 'desc' });
   const result = transactions.map((transaction) => ({
     expenseId: transaction.expenseId,
     expenseDescription: transaction.expenseDescription,
@@ -126,6 +126,7 @@ router.post('/postComment', checkAuth, async (req, res) => {
   const data = {
     userName: user.name,
     commentDetails: req.body.comment,
+    commentDate: new Date(),
   };
   expense.comments.push(data);
   await expense.save();
@@ -142,6 +143,7 @@ router.get('/getComments', checkAuth, async (req, res) => {
           expenseId: expense._id,
           userName: 'You',
           commentDetails: comment.commentDetails,
+          commentDate: comment.commentDate,
         }
       );
     }
@@ -149,6 +151,7 @@ router.get('/getComments', checkAuth, async (req, res) => {
       expenseId: expense._id,
       userName: comment.userName,
       commentDetails: comment.commentDetails,
+      commentDate: comment.commentDate,
     });
   });
   res.send(result);

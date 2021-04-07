@@ -89,7 +89,7 @@ class Register extends Component {
         {invalidRegisterFlag ? (
           <SweetAlert
             warning
-            title="Invalid Email Id"
+            title="Email Id already exists"
             onConfirm={() => {
               this.setState({
                 invalidRegisterFlag: false,

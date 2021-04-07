@@ -17,7 +17,17 @@ router.get('/', checkAuth, async (req, res) => {
   const groupIds = user.joinedGroups;
   const memberGroups = await Groups.find({ _id: groupIds });
   const memberGroupsNames = memberGroups.map((memberGroup) => memberGroup.name);
-  const groupTransactions = await Transactions.find({ groupName: memberGroupsNames }).sort({ time: 'desc' });
+  const { order, selectedGroup } = req.query;
+  let groupTransactions = [];
+  if (order === 'asc' && selectedGroup === 'All') {
+    groupTransactions = await Transactions.find({ groupName: memberGroupsNames }).sort({ time: 1 });
+  } else if (order === 'asc') {
+    groupTransactions = await Transactions.find({ groupName: selectedGroup }).sort({ time: 1 });
+  } else if (order === 'desc' && selectedGroup === 'All') {
+    groupTransactions = await Transactions.find({ groupName: memberGroupsNames }).sort({ time: 'desc' });
+  } else {
+    groupTransactions = await Transactions.find({ groupName: selectedGroup }).sort({ time: 'desc' });
+  }
   const result = groupTransactions.map((groupTransaction) => {
     if (groupTransaction.paidUserId.equals(groupTransaction.owedUserId)
       && groupTransaction.paidUserId.equals(user._id)) {
@@ -128,7 +138,13 @@ router.get('/getPaginationNumbers', checkAuth, async (req, res) => {
   const groupIds = user.joinedGroups;
   const memberGroups = await Groups.find({ _id: groupIds });
   const memberGroupsNames = memberGroups.map((memberGroup) => memberGroup.name);
-  const groupTransactions = await Transactions.find({ groupName: memberGroupsNames }).sort({ time: 'desc' });
+  const { selectedGroup } = req.query;
+  let groupTransactions = [];
+  if (selectedGroup === 'All') {
+    groupTransactions = await Transactions.find({ groupName: memberGroupsNames }).sort({ time: 'desc' });
+  } else {
+    groupTransactions = await Transactions.find({ groupName: selectedGroup }).sort({ time: 'desc' });
+  }
   const { pageSize } = req.query;
   const paginationNumber = (groupTransactions.length / pageSize);
   res.send({ paginationNumber: Math.ceil(paginationNumber) });
