@@ -24,6 +24,8 @@ function Dashboardbox(props) {
   const getFriendsDetails = async () => {
     const res = await axios.get('http://localhost:3001/dashboard/getSettleModalDetails', { params: { userId } });
     setFriends([...res.data]);
+    const { onGetSettleUserNames } = props;
+    onGetSettleUserNames(res.data);
   };
   const getPaidAndOwedAmount = async () => {
     const res = await axios.get('http://localhost:3001/dashboard/getTotalPaidAndOwedAmount', { params: { userId } });
@@ -32,6 +34,8 @@ function Dashboardbox(props) {
     const totalBalanceValue = res.data.totalPaidAmount - res.data.totalOwedAmount;
     setTotalBalance(totalBalanceValue.toFixed(2));
     setFadeFlag(true);
+    const { onGetTotalAmount } = props;
+    onGetTotalAmount(res.data);
   };
   useEffect(() => {
     // eslint-disable-next-line no-shadow
@@ -42,11 +46,15 @@ function Dashboardbox(props) {
       const totalBalanceValue = res.data.totalPaidAmount - res.data.totalOwedAmount;
       setTotalBalance(totalBalanceValue.toFixed(2));
       setFadeFlag(true);
+      const { onGetTotalAmount } = props;
+      onGetTotalAmount(res.data);
     };
     // eslint-disable-next-line no-shadow
     const getFriendsDetails = async () => {
       const res = await axios.get('http://localhost:3001/dashboard/getSettleModalDetails', { params: { userId } });
       setFriends([...res.data]);
+      const { onGetSettleUserNames } = props;
+      onGetSettleUserNames(res.data);
     };
     getPaidAndOwedAmount();
     getFriendsDetails();
@@ -82,10 +90,10 @@ function Dashboardbox(props) {
     setModalOpen(false);
     getPaidAndOwedAmount();
     const {
-      userIdRedux, userNameRedux, refreshBitLocal, onSettleUpAction,
+      refreshBitLocal, onSettleUpAction,
     } = props;
     const modifiedRefreshBitLocal = !refreshBitLocal;
-    const modifiedRefreshBitLocalObject = { userIdRedux, userNameRedux, modifiedRefreshBitLocal };
+    const modifiedRefreshBitLocalObject = { modifiedRefreshBitLocal };
     onSettleUpAction(modifiedRefreshBitLocalObject);
   };
 
@@ -169,12 +177,13 @@ function Dashboardbox(props) {
 
 const mapStateToProps = (state) => ({
   userIdRedux: state.id,
-  userNameRedux: state.name,
   refreshBitLocal: state.refreshBitYouOwe,
 });
 
 const mapDispatchToProps = (dispatch) => ({
   onSettleUpAction: (userData) => dispatch({ type: 'RENDER_YOU_OWE', value: userData }),
+  onGetTotalAmount: (userData) => dispatch({ type: 'GET_TOTAL_AMOUNT', value: userData }),
+  onGetSettleUserNames: (userData) => dispatch({ type: 'GET_SETTLE_UP_USERNAMES', value: userData }),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Dashboardbox);

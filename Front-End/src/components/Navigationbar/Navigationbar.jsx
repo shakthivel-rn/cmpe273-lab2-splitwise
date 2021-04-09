@@ -42,12 +42,12 @@ class Navigationbar extends Component {
     let profileImage = null;
     const { authenticationToken, imagePreview } = this.state;
     const {
-      userIdRedux, userNameRedux, refreshBitLocal, onProfileImageUploadAction,
+      refreshBitLocal, onProfileImageUploadAction,
     } = this.props;
     if (refreshBitLocal) {
       this.getUserProfileImage();
       const modifiedRefreshBitLocal = !refreshBitLocal;
-      const modifiedRefreshBitLocalObject = { userIdRedux, userNameRedux, modifiedRefreshBitLocal };
+      const modifiedRefreshBitLocalObject = { modifiedRefreshBitLocal };
       onProfileImageUploadAction(modifiedRefreshBitLocalObject);
     }
     if (authenticationToken) {
@@ -124,8 +124,6 @@ class Navigationbar extends Component {
 }
 
 const mapStateToProps = (state) => ({
-  userIdRedux: state.id,
-  userNameRedux: state.name,
   refreshBitLocal: state.refreshBitProfileImage,
 });
 

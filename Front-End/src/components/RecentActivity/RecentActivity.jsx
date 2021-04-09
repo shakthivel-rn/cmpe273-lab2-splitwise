@@ -38,6 +38,7 @@ class RecentActivity extends Component {
     const {
       userId, pageSize, order, selectedGroup,
     } = this.state;
+    const { onGetRecentActivity } = this.props;
     const pageNumber = 1;
     const res = await axios.get('http://localhost:3001/recentActivity', {
       params: {
@@ -49,6 +50,7 @@ class RecentActivity extends Component {
       recentactivitylogs: recentactivitylogs.concat(res.data),
       fadeFlag: true,
     });
+    onGetRecentActivity(res.data);
     const response = await axios.get('http://localhost:3001/recentActivity/getPaginationNumbers', { params: { userId, pageSize, selectedGroup } });
     this.setState({
       paginationNumber: response.data.paginationNumber,
@@ -67,6 +69,7 @@ class RecentActivity extends Component {
     const {
       userId, pageSize, order, selectedGroup,
     } = this.state;
+    const { onGetRecentActivity } = this.props;
     const res = await axios.get('http://localhost:3001/recentActivity/getPaginationNumbers', { params: { userId, pageSize, selectedGroup } });
     this.setState({
       paginationNumber: res.data.paginationNumber,
@@ -82,6 +85,7 @@ class RecentActivity extends Component {
       fadeFlag: true,
       active: pageNumber,
     });
+    onGetRecentActivity(response.data);
   }
 
   onPageChange = async (pagenumber) => {
@@ -91,6 +95,7 @@ class RecentActivity extends Component {
     const {
       userId, pageSize, order, selectedGroup,
     } = this.state;
+    const { onGetRecentActivity } = this.props;
     const pageNumber = pagenumber;
     const res = await axios.get('http://localhost:3001/recentActivity', {
       params: {
@@ -102,6 +107,7 @@ class RecentActivity extends Component {
       fadeFlag: true,
       active: pagenumber,
     });
+    onGetRecentActivity(res.data);
   }
 
   onOrderChange = async (e) => {
@@ -112,6 +118,7 @@ class RecentActivity extends Component {
     const {
       userId, pageSize, order, selectedGroup,
     } = this.state;
+    const { onGetRecentActivity } = this.props;
     const pageNumber = 1;
     const response = await axios.get('http://localhost:3001/recentActivity', {
       params: {
@@ -123,6 +130,7 @@ class RecentActivity extends Component {
       fadeFlag: true,
       active: pageNumber,
     });
+    onGetRecentActivity(response.data);
   }
 
   onGroupChange = async (e) => {
@@ -133,6 +141,7 @@ class RecentActivity extends Component {
     const {
       userId, pageSize, order, selectedGroup,
     } = this.state;
+    const { onGetRecentActivity } = this.props;
     const res = await axios.get('http://localhost:3001/recentActivity/getPaginationNumbers', { params: { userId, pageSize, selectedGroup } });
     this.setState({
       paginationNumber: res.data.paginationNumber,
@@ -148,6 +157,7 @@ class RecentActivity extends Component {
       fadeFlag: true,
       active: pageNumber,
     });
+    onGetRecentActivity(response.data);
   }
 
   render() {
@@ -265,4 +275,8 @@ const mapStateToProps = (state) => ({
   userIdRedux: state.id,
 });
 
-export default connect(mapStateToProps)(RecentActivity);
+const mapDispatchToProps = (dispatch) => ({
+  onGetRecentActivity: (userData) => dispatch({ type: 'GET_RECENT_ACTIVITY', value: userData }),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(RecentActivity);

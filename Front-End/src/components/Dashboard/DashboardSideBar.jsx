@@ -29,6 +29,8 @@ class DashboardSideBar extends Component {
       groups: [...res.data],
       fadeFlag: true,
     });
+    const { onGetJoinedGroups } = this.props;
+    onGetJoinedGroups(res.data);
   }
 
   async getDashboardSidebarDetails() {
@@ -39,17 +41,19 @@ class DashboardSideBar extends Component {
       groups: [...res.data],
       fadeFlag: true,
     });
+    const { onGetJoinedGroups } = this.props;
+    onGetJoinedGroups(res.data);
   }
 
   render() {
     const { groups, fadeFlag } = this.state;
     const {
-      userIdRedux, userNameRedux, refreshBitLocal, onMyGroupsChange,
+      refreshBitLocal, onMyGroupsChange,
     } = this.props;
     if (refreshBitLocal) {
       this.getDashboardSidebarDetails();
       const modifiedRefreshBitLocal = !refreshBitLocal;
-      const modifiedRefreshBitLocalObject = { userIdRedux, userNameRedux, modifiedRefreshBitLocal };
+      const modifiedRefreshBitLocalObject = { modifiedRefreshBitLocal };
       onMyGroupsChange(modifiedRefreshBitLocalObject);
     }
     const groupNames = groups.map((group) => (
@@ -95,11 +99,11 @@ class DashboardSideBar extends Component {
 
 const mapStateToProps = (state) => ({
   userIdRedux: state.id,
-  userNameRedux: state.name,
   refreshBitLocal: state.refreshBit,
 });
 const mapDispatchToProps = (dispatch) => ({
   onMyGroupsChange: (userData) => dispatch({ type: 'RENDER', value: userData }),
+  onGetJoinedGroups: (userData) => dispatch({ type: 'GET_JOINED_GROUPS', value: userData }),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(DashboardSideBar);

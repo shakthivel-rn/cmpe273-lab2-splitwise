@@ -80,12 +80,10 @@ class ProfileImage extends Component {
                     imageUploadedFlag: true,
                   });
                   const {
-                    userIdRedux, userNameRedux, refreshBitLocal, onProfileImageUploadAction,
+                    refreshBitLocal, onProfileImageUploadAction,
                   } = this.props;
                   const modifiedRefreshBitLocal = !refreshBitLocal;
                   const modifiedRefreshBitLocalObject = {
-                    userIdRedux,
-                    userNameRedux,
                     modifiedRefreshBitLocal,
                   };
                   onProfileImageUploadAction(modifiedRefreshBitLocalObject);
@@ -148,7 +146,6 @@ class ProfileImage extends Component {
 
 const mapStateToProps = (state) => ({
   userIdRedux: state.id,
-  userNameRedux: state.name,
   refreshBitLocal: state.refreshBitProfileImage,
 });
 

@@ -59,6 +59,8 @@ class GroupPage extends Component {
       groupDatas: [...res.data],
       fadeFlag: true,
     });
+    const { onGetGroupDetails } = this.props;
+    onGetGroupDetails(res.data);
   }
 
   async componentDidUpdate(prevProps, prevState) {
@@ -70,6 +72,8 @@ class GroupPage extends Component {
         groupDatas: [...res.data],
         fadeFlag: true,
       });
+      const { onGetGroupDetails } = this.props;
+      onGetGroupDetails(res.data);
     }
   }
 
@@ -81,19 +85,22 @@ class GroupPage extends Component {
       fadeFlag: true,
     });
     this.closeModal();
+    const { onGetGroupDetails } = this.props;
+    onGetGroupDetails(res.data);
   }
 
   async getExpenseDetails(expenseId) {
     const { userId, groupName } = this.state;
+    const { onGetExpenseDetails, onGetComments } = this.props;
     const res = await axios.get('http://localhost:3001/groupPage/getExpenseDetail', { params: { userId, groupName, expenseId } });
+    const response = await axios.get('http://localhost:3001/groupPage/getComments', { params: { userId, expenseId } });
     this.setState({
       expenseDatas: [...res.data],
       expenseFadeFlag: true,
-    });
-    const response = await axios.get('http://localhost:3001/groupPage/getComments', { params: { userId, expenseId } });
-    this.setState({
       comments: [...response.data],
     });
+    onGetExpenseDetails(res.data);
+    onGetComments(response.data);
   }
 
   handleChangeComment = (e) => {
@@ -143,27 +150,35 @@ class GroupPage extends Component {
       if (comment.userName === 'You') {
         commentsDataList.push(
           <ListGroup.Item>
-            <Form.Control className="commentItems" readOnly as="textarea" rows={3}>
-              {`${comment.userName} ${comment.commentDate.slice(0, 10)} 
-${comment.commentDetails}  ` }
-            </Form.Control>
-            <BsXCircleFill onClick={() => {
-              this.setState({
-                expenseId: comment.expenseId,
-                commentIndex: i,
-                deleteFlag: true,
-              });
-            }}
+            <Form.Control
+              placeholder={`${comment.userName} ${comment.commentDate.slice(0, 10)} 
+${comment.commentDetails}  `}
+              readOnly
+              as="textarea"
+              rows={3}
+            />
+            <BsXCircleFill
+              id="deleteCommentButton"
+              onClick={() => {
+                this.setState({
+                  expenseId: comment.expenseId,
+                  commentIndex: i,
+                  deleteFlag: true,
+                });
+              }}
             />
           </ListGroup.Item>,
         );
       } else {
         commentsDataList.push(
           <ListGroup.Item>
-            <Form.Control className="commentItems" readOnly as="textarea" rows={3}>
-              {`${comment.userName} ${comment.commentDate.slice(0, 10)} 
-${comment.commentDetails}  ` }
-            </Form.Control>
+            <Form.Control
+              placeholder={`${comment.userName} ${comment.commentDate.slice(0, 10)} 
+${comment.commentDetails}  `}
+              readOnly
+              as="textarea"
+              rows={3}
+            />
           </ListGroup.Item>,
         );
       }
@@ -233,7 +248,6 @@ ${comment.commentDetails}  ` }
                             {commentsDataList.length === 0 ? <p>No comments</p> : (
                               commentsDataList
                             )}
-                            {' '}
                           </ListGroup>
                         </Col>
                         <Col>
@@ -339,4 +353,10 @@ const mapStateToProps = (state) => ({
   userIdRedux: state.id,
 });
 
-export default connect(mapStateToProps)(GroupPage);
+const mapDispatchToProps = (dispatch) => ({
+  onGetGroupDetails: (userData) => dispatch({ type: 'GET_GROUP_DATA', value: userData }),
+  onGetExpenseDetails: (userData) => dispatch({ type: 'GET_EXPENSE_DETAILS', value: userData }),
+  onGetComments: (userData) => dispatch({ type: 'GET_COMMENTS', value: userData }),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(GroupPage);

@@ -37,12 +37,12 @@ class YouOwe extends Component {
     const { youowes, fadeFlag } = this.state;
     const youowelist = youowes.map((youowe) => <ListGroup.Item>{`You owe ${youowe.paidUserName} ${youowe.individualOwedAmount}$ in ${youowe.groupName}` }</ListGroup.Item>);
     const {
-      userIdRedux, userNameRedux, refreshBitLocal, onSettleUpAction,
+      refreshBitLocal, onSettleUpAction,
     } = this.props;
     if (refreshBitLocal) {
       this.getYouAreOwedDetails();
       const modifiedRefreshBitLocal = !refreshBitLocal;
-      const modifiedRefreshBitLocalObject = { userIdRedux, userNameRedux, modifiedRefreshBitLocal };
+      const modifiedRefreshBitLocalObject = { modifiedRefreshBitLocal };
       onSettleUpAction(modifiedRefreshBitLocalObject);
     }
     return (
@@ -66,7 +66,6 @@ class YouOwe extends Component {
 
 const mapStateToProps = (state) => ({
   userIdRedux: state.id,
-  userNameRedux: state.name,
   refreshBitLocal: state.refreshBitYouOwe,
 });
 

@@ -73,15 +73,18 @@ class MyGroups extends Component {
 
   async getMyGroupDetails() {
     const { userId } = this.state;
+    const { onGetJoinedGroups, onGetInvitedGroups } = this.props;
     const resGroupNames = await axios.get('http://localhost:3001/dashboard/getGroupNames', { params: { userId } });
     this.setState({
       groupList: [...resGroupNames.data],
     });
+    onGetJoinedGroups(resGroupNames.data);
     const resGroupInvites = await axios.get('http://localhost:3001/myGroups', { params: { userId } });
     this.setState({
       inviteList: [...resGroupInvites.data],
       fadeFlag: true,
     });
+    onGetInvitedGroups(resGroupInvites.data);
   }
 
   render() {
@@ -131,12 +134,10 @@ class MyGroups extends Component {
               });
               this.getMyGroupDetails();
               const {
-                userIdRedux, userNameRedux, refreshBitLocal, onMyGroupsChange,
+                refreshBitLocal, onMyGroupsChange,
               } = this.props;
               const modifiedRefreshBitLocal = !refreshBitLocal;
               const modifiedRefreshBitLocalObject = {
-                userIdRedux,
-                userNameRedux,
                 modifiedRefreshBitLocal,
               };
               onMyGroupsChange(modifiedRefreshBitLocalObject);
@@ -153,12 +154,10 @@ class MyGroups extends Component {
               });
               this.getMyGroupDetails();
               const {
-                userIdRedux, userNameRedux, refreshBitLocal, onMyGroupsChange,
+                refreshBitLocal, onMyGroupsChange,
               } = this.props;
               const modifiedRefreshBitLocal = !refreshBitLocal;
               const modifiedRefreshBitLocalObject = {
-                userIdRedux,
-                userNameRedux,
                 modifiedRefreshBitLocal,
               };
               onMyGroupsChange(modifiedRefreshBitLocalObject);
@@ -223,12 +222,13 @@ class MyGroups extends Component {
 
 const mapStateToProps = (state) => ({
   userIdRedux: state.id,
-  userNameRedux: state.name,
   refreshBitLocal: state.refreshBit,
 });
 
 const mapDispatchToProps = (dispatch) => ({
   onMyGroupsChange: (userData) => dispatch({ type: 'RENDER', value: userData }),
+  onGetJoinedGroups: (userData) => dispatch({ type: 'GET_JOINED_GROUPS', value: userData }),
+  onGetInvitedGroups: (userData) => dispatch({ type: 'GET_INVITED_GROUPS', value: userData }),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(MyGroups);
