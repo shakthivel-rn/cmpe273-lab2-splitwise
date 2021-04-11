@@ -15,7 +15,7 @@ class ProfileImage extends Component {
     this.state = {
       userId: userIdRedux,
       selectedFile: null,
-      imagePreview: null,
+      imagePreview: undefined,
       imageUploadedFlag: false,
     };
     this.handleImage = this.handleImage.bind(this);
@@ -54,54 +54,31 @@ class ProfileImage extends Component {
         },
       })
         .then((response) => {
-          if (response.status === 200) {
-            // If file size is larger than expected.
-            if (response.data.error) {
-              if (response.data.error.code === 'LIMIT_FILE_SIZE') {
-                console.log('error');
-              } else {
-                console.log(response.data);// If not the given file type
-                console.log('error');
-              }
-            } else {
-              // Success
-              const fileLocation = response.data.location;
+          // Success
+          const fileLocation = response.data.location;
+          this.setState({
+            imagePreview: fileLocation,
+          });
+          const userData = {
+            userId,
+            fileLocation,
+          };
+          axios.defaults.withCredentials = true;
+          axios.post('http://localhost:3001/profilePage/storeImage', userData)
+            .then(() => {
               this.setState({
-                imagePreview: fileLocation,
+                imageUploadedFlag: true,
               });
-              const userData = {
-                userId,
-                fileLocation,
+              const {
+                refreshBitLocal, onProfileImageUploadAction,
+              } = this.props;
+              const modifiedRefreshBitLocal = !refreshBitLocal;
+              const modifiedRefreshBitLocalObject = {
+                modifiedRefreshBitLocal,
               };
-              axios.defaults.withCredentials = true;
-              axios.post('http://localhost:3001/profilePage/storeImage', userData)
-                .then(() => {
-                  this.setState({
-                    imageUploadedFlag: true,
-                  });
-                  const {
-                    refreshBitLocal, onProfileImageUploadAction,
-                  } = this.props;
-                  const modifiedRefreshBitLocal = !refreshBitLocal;
-                  const modifiedRefreshBitLocalObject = {
-                    modifiedRefreshBitLocal,
-                  };
-                  onProfileImageUploadAction(modifiedRefreshBitLocalObject);
-                });
-
-              console.log(typeof fileLocation);
-              console.log('fileName', fileLocation);
-              console.log('success');
-            }
-          }
-        }).catch((error) => {
-          // If another error
-          console.log(error);
-          console.log('error');
+              onProfileImageUploadAction(modifiedRefreshBitLocalObject);
+            });
         });
-    } else {
-      // if file not selected throw error
-      console.log('error');
     }
   };
 

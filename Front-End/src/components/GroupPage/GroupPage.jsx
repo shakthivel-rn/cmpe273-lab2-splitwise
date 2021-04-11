@@ -5,7 +5,7 @@ import '../../App.css';
 import './GroupPage.css';
 import { Redirect } from 'react-router';
 import {
-  Container, Row, Col, Button, Accordion, Modal, Fade, Card, ListGroup, Form,
+  Container, Row, Col, Button, Accordion, Modal, Fade, Card, ListGroup, Form, Image,
 } from 'react-bootstrap';
 import axios from 'axios';
 import { connect } from 'react-redux';
@@ -35,6 +35,7 @@ class GroupPage extends Component {
       expenseId: undefined,
       commentIndex: undefined,
       deleteFlag: false,
+      imagePreview: undefined,
     };
     this.getGroupDetails = this.getGroupDetails.bind(this);
     this.getExpenseDetails = this.getExpenseDetails.bind(this);
@@ -61,6 +62,10 @@ class GroupPage extends Component {
     });
     const { onGetGroupDetails } = this.props;
     onGetGroupDetails(res.data);
+    const response = await axios.get('http://localhost:3001/groupPage/getImage', { params: { groupName } });
+    this.setState({
+      imagePreview: response.data.image,
+    });
   }
 
   async componentDidUpdate(prevProps, prevState) {
@@ -74,6 +79,11 @@ class GroupPage extends Component {
       });
       const { onGetGroupDetails } = this.props;
       onGetGroupDetails(res.data);
+      const response = await axios.get('http://localhost:3001/groupPage/getImage', { params: { groupName } });
+      // eslint-disable-next-line react/no-did-update-set-state
+      this.setState({
+        imagePreview: response.data.image,
+      });
     }
   }
 
@@ -140,7 +150,7 @@ class GroupPage extends Component {
   render() {
     const {
       groupId, groupName, groupDatas, isModalOpen, fadeFlag, authenticationToken,
-      expenseDatas, expenseFadeFlag, comments, expenseId, commentIndex, deleteFlag,
+      expenseDatas, expenseFadeFlag, comments, expenseId, commentIndex, deleteFlag, imagePreview,
     } = this.state;
     let { eventKey } = this.state;
     const groupDataList = [];
@@ -304,14 +314,17 @@ ${comment.commentDetails}  `}
                 <Col>
                   <div id="grouppagetop">
                     <Row>
-                      <Col lg={7}>
+                      <Col xs={1.7}>
                         <Fade in={fadeFlag}>
-                          <div>
-                            <h3 id="grouptitle">{groupName}</h3>
-                          </div>
+                          <Image src={imagePreview} width={80} roundedCircle />
                         </Fade>
                       </Col>
-                      <Col><Button id="addanexpense" onClick={this.openModal}>Add an expense</Button></Col>
+                      <Col>
+                        <Fade in={fadeFlag}>
+                          <h3 id="grouptitle">{groupName}</h3>
+                        </Fade>
+                      </Col>
+                      <Col><Fade in={fadeFlag}><Button id="addanexpense" onClick={this.openModal}>Add an expense</Button></Fade></Col>
                       <Modal show={isModalOpen}>
                         <Modal.Header id="modaltop">
                           <Modal.Title>Add an expense</Modal.Title>

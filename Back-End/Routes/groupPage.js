@@ -1,6 +1,7 @@
 /* eslint-disable no-underscore-dangle */
 const express = require('express');
 const Users = require('../ModelsMongoDB/Users');
+const Groups = require('../ModelsMongoDB/Groups');
 const Expenses = require('../ModelsMongoDB/Expenses');
 const Transactions = require('../ModelsMongoDB/Transactions');
 const { checkAuth } = require('../Utils/passport');
@@ -162,6 +163,11 @@ router.post('/deleteComment', checkAuth, async (req, res) => {
   expense.comments.splice(req.body.commentIndex, 1);
   await expense.save();
   res.send();
+});
+
+router.get('/getImage', async (req, res) => {
+  const group = await Groups.findOne({ name: req.query.groupName }, { image: 1 });
+  res.send(group);
 });
 
 module.exports = router;

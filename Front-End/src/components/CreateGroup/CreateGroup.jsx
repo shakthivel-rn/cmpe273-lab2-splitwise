@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 /* eslint-disable react/prop-types */
 import React, { Component } from 'react';
 import '../../App.css';
@@ -26,12 +27,15 @@ class CreateGroup extends Component {
       groupCreatedFlag: false,
       redirectPage: false,
       authenticationToken: localStorage.getItem('token'),
+      selectedFile: null,
+      imagePreview: undefined,
     };
     this.appendInput = this.appendInput.bind(this);
     this.removeInput = this.removeInput.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.handleChangeGroupName = this.handleChangeGroupName.bind(this);
     this.submitGroup = this.submitGroup.bind(this);
+    this.handleImage = this.handleImage.bind(this);
   }
 
   async componentDidMount() {
@@ -40,6 +44,15 @@ class CreateGroup extends Component {
     this.setState({
       fadeFlag: true,
       inputEmails: [...res.data],
+    });
+  }
+
+  handleImage = (e) => {
+    this.setState({
+      selectedFile: e.target.files[0],
+    });
+    this.setState({
+      imagePreview: URL.createObjectURL(e.target.files[0]),
     });
   }
 
@@ -78,6 +91,33 @@ class CreateGroup extends Component {
           invalidGroupNameFlag: true,
         });
       });
+
+    const imageData = new FormData();// If file selected
+    const { selectedFile } = this.state;
+    if (selectedFile) {
+      imageData.append('profileImage', selectedFile, selectedFile.name);
+      axios.defaults.withCredentials = true;
+      axios.post('http://localhost:3001/createGroup/profile-img-upload', imageData, {
+        headers: {
+          accept: 'application/json',
+          'Accept-Language': 'en-US,en;q=0.8',
+          'Content-Type': `multipart/form-data; boundary=${imageData._boundary}`,
+        },
+      })
+        .then((response) => {
+          // Success
+          const fileLocation = response.data.location;
+          this.setState({
+            imagePreview: fileLocation,
+          });
+          const groupData = {
+            groupName,
+            fileLocation,
+          };
+          axios.defaults.withCredentials = true;
+          axios.post('http://localhost:3001/createGroup/storeImage', groupData);
+        });
+    }
   }
 
   appendInput() {
@@ -101,7 +141,7 @@ class CreateGroup extends Component {
   render() {
     const {
       inputs, fadeFlag, inputEmails, invalidGroupNameFlag,
-      groupCreatedFlag, redirectPage, authenticationToken,
+      groupCreatedFlag, redirectPage, authenticationToken, imagePreview,
     } = this.state;
     const inputEmailsList = inputEmails.map((inputEmail) => (
       <option value={inputEmail.email}>{inputEmail.email}</option>
@@ -147,26 +187,24 @@ class CreateGroup extends Component {
               <Container>
                 <Fade in={fadeFlag}>
                   <div>
-                    <Row>
-                      <Col lg={3}>
-                        <Figure>
-                          <Figure.Image
-                            width={171}
-                            height={180}
-                            alt="171x180"
-                            src={`${window.location.origin}/group.png`}
-                          />
-                        </Figure>
-                        <Form>
+                    <Form method="post" onSubmit={this.submitGroup}>
+                      <Row>
+                        <Col lg={3}>
+                          <Figure>
+                            <Figure.Image
+                              width={171}
+                              height={180}
+                              alt="171x180"
+                              src={imagePreview === undefined ? `${window.location.origin}/group.png` : imagePreview}
+                            />
+                          </Figure>
                           <Form.Group>
-                            <Form.File id="userimage" label="Change your avatar" />
+                            <Form.File id="userimage" label="Change your group image" onChange={this.handleImage} />
                           </Form.Group>
-                        </Form>
-                      </Col>
-                      <Col>
-                        <p>START A NEW GROUP</p>
-                        <p>My group shall be called...</p>
-                        <Form method="post" onSubmit={this.submitGroup}>
+                        </Col>
+                        <Col>
+                          <p>START A NEW GROUP</p>
+                          <p>My group shall be called...</p>
                           <Form.Group controlId="formGroupName">
                             <Form.Control type="text" onChange={this.handleChangeGroupName} name="groupname" placeholder="Enter Group Name" required />
                           </Form.Group>
@@ -177,9 +215,9 @@ class CreateGroup extends Component {
                           <Button className="groupButtons" type="submit">
                             Submit
                           </Button>
-                        </Form>
-                      </Col>
-                    </Row>
+                        </Col>
+                      </Row>
+                    </Form>
                   </div>
                 </Fade>
               </Container>
