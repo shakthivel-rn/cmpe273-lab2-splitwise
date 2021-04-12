@@ -7,6 +7,7 @@ const path = require('path');
 const Users = require('../ModelsMongoDB/Users');
 const Groups = require('../ModelsMongoDB/Groups');
 const { checkAuth } = require('../Utils/passport');
+const kafka = require('../kafka/client');
 
 const router = express.Router();
 
@@ -45,7 +46,18 @@ const profileImgUpload = multer({
 }).single('profileImage');
 
 router.post('/', checkAuth, async (req, res) => {
-  const existingGroup = await Groups.findOne({ name: req.body.groupName });
+  console.log('Inside Create Group POST!');
+  console.log('Request Body: ', req.body);
+  kafka.make_request('create-group', req.body, (err, result) => {
+    if (result === 400) {
+      res.status(400);
+    } else {
+      res.status(200);
+    }
+    console.log(result);
+    res.send();
+  });
+  /* const existingGroup = await Groups.findOne({ name: req.body.groupName });
   if (existingGroup === null) {
     const creatorUser = await Users.findOne({ _id: req.body.userId });
     const otherUsers = await Users.find({ email: req.body.memberEmails });
@@ -65,7 +77,7 @@ router.post('/', checkAuth, async (req, res) => {
   } else {
     res.status(400);
   }
-  res.send();
+  res.send(); */
 });
 
 router.get('/getMemberEmails', checkAuth, async (req, res) => {
