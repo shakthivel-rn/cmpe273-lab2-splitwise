@@ -7,8 +7,6 @@ const kafka = require('../kafka/client');
 const router = express.Router();
 
 router.post('/', checkAuth, async (req, res) => {
-  console.log('Inside Create Expense POST!');
-  console.log('Request Body: ', req.body);
   kafka.make_request('create-expense', req.body, (err, result) => {
     if (result === 401) {
       res.status(401);

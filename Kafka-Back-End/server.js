@@ -7,6 +7,12 @@ const connection = require('./kafka/Connection');
 
 const CreateGroup = require('./services/createGroup');
 const CreateExpense = require('./services/createExpense');
+const SettleAmount = require('./services/settleAmount');
+const GetDashboardBox = require('./services/getDashboardBox');
+const GetYouOwe = require('./services/getYouOwe');
+const GetYouAreOwed = require('./services/getYouAreOwed');
+const GetGroupNames = require('./services/getGroupNames');
+const GetSettleModal = require('./services/getSettleModal');
 
 const options = {
   useNewUrlParser: true,
@@ -58,3 +64,9 @@ function handleTopicRequest(topic_name, function_name) {
 
 handleTopicRequest('create-group', CreateGroup);
 handleTopicRequest('create-expense', CreateExpense);
+handleTopicRequest('settle-amount', SettleAmount);
+handleTopicRequest('get-dashboard-box', GetDashboardBox);
+handleTopicRequest('get-you-owe', GetYouOwe);
+handleTopicRequest('get-you-are-owed', GetYouAreOwed);
+handleTopicRequest('get-group-names', GetGroupNames);
+handleTopicRequest('get-settle-modal', GetSettleModal);

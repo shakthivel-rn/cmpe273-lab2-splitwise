@@ -46,8 +46,6 @@ const profileImgUpload = multer({
 }).single('profileImage');
 
 router.post('/', checkAuth, async (req, res) => {
-  console.log('Inside Create Group POST!');
-  console.log('Request Body: ', req.body);
   kafka.make_request('create-group', req.body, (err, result) => {
     if (result === 400) {
       res.status(400);
