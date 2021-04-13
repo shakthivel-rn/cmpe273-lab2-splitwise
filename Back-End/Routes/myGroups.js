@@ -1,45 +1,27 @@
 /* eslint-disable no-underscore-dangle */
 const express = require('express');
-const Users = require('../ModelsMongoDB/Users');
-const Groups = require('../ModelsMongoDB/Groups');
-const Transactions = require('../ModelsMongoDB/Transactions');
+const kafka = require('../kafka/client');
 const { checkAuth } = require('../Utils/passport');
 
 const router = express.Router();
 
 router.get('/', checkAuth, async (req, res) => {
-  const allUsers = await Users.find({});
-  const allUsersNames = {};
-  allUsers.forEach((allUser) => {
-    allUsersNames[allUser._id] = allUser.name;
+  kafka.make_request('get-invited-groups', req.query, (err, result) => {
+    res.send(result);
   });
-  const user = await Users.findOne({ _id: req.query.userId });
-  const groupIds = user.invitedGroups;
-  const pendingInvites = await Groups.find({ _id: groupIds });
-  const inviteDetails = pendingInvites.map((pendingInvite) => ({
-    groupId: pendingInvite._id,
-    groupName: pendingInvite.name,
-    creatorUser: allUsersNames[pendingInvite.creatorId],
-    creatorId: pendingInvite.creatorId,
-  }
-  ));
-  res.send(inviteDetails);
 });
 
 router.post('/acceptGroupInvite', checkAuth, async (req, res) => {
-  const group = await Groups.findOne({ _id: req.body.groupId });
-  const user = await Users.findOne({ _id: req.body.userId });
-  group.groupMembers.push(user._id);
-  await group.save();
-  const elementPos = user.invitedGroups.map((x) => x._id).indexOf(req.body.groupId);
-  user.joinedGroups.push(user.invitedGroups[elementPos]);
-  user.invitedGroups.splice(elementPos, elementPos + 1);
-  await user.save();
-  res.send();
+  kafka.make_request('accept-group-invite', req.body, (err, result) => {
+    res.sendStatus(result);
+  });
 });
 
 router.post('/leaveGroup', checkAuth, async (req, res) => {
-  let status = 401;
+  kafka.make_request('leave-group', req.body, (err, result) => {
+    res.sendStatus(result);
+  });
+  /* let status = 401;
   const user = await Users.findOne({ _id: req.body.userId });
   const group = await Groups.findOne({ name: req.body.groupName });
   const groupOwedAmount = await Transactions.aggregate(
@@ -69,7 +51,7 @@ router.post('/leaveGroup', checkAuth, async (req, res) => {
     group.save();
     status = 200;
   }
-  res.sendStatus(status);
+  res.sendStatus(status); */
 });
 
 module.exports = router;
