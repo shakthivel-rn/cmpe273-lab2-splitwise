@@ -23,6 +23,8 @@ const GetPaginationNumber = require('./services/getPaginationNumber');
 const GetInvitedGroups = require('./services/getInvitedGroups');
 const AcceptGroupInvite = require('./services/acceptGroupInvite');
 const LeaveGroup = require('./services/leaveGroup');
+const Login = require('./services/login');
+const Register = require('./services/register');
 
 const options = {
   useNewUrlParser: true,
@@ -90,3 +92,5 @@ handleTopicRequest('get-pagination-number', GetPaginationNumber);
 handleTopicRequest('get-invited-groups', GetInvitedGroups);
 handleTopicRequest('accept-group-invite', AcceptGroupInvite);
 handleTopicRequest('leave-group', LeaveGroup);
+handleTopicRequest('login', Login);
+handleTopicRequest('register', Register);
