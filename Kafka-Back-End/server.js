@@ -18,6 +18,8 @@ const GetExpenseDetails = require('./services/getExpenseDetails');
 const PostComment = require('./services/postComment');
 const GetComments = require('./services/getComments');
 const DeleteComment = require('./services/deleteComment');
+const GetRecentActivity = require('./services/getRecentActivity');
+const GetPaginationNumber = require('./services/getPaginationNumber');
 
 const options = {
   useNewUrlParser: true,
@@ -80,3 +82,5 @@ handleTopicRequest('get-expense-details', GetExpenseDetails);
 handleTopicRequest('post-comment', PostComment);
 handleTopicRequest('get-comments', GetComments);
 handleTopicRequest('delete-comment', DeleteComment);
+handleTopicRequest('get-recent-activity', GetRecentActivity);
+handleTopicRequest('get-pagination-number', GetPaginationNumber);
