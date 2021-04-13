@@ -13,6 +13,11 @@ const GetYouOwe = require('./services/getYouOwe');
 const GetYouAreOwed = require('./services/getYouAreOwed');
 const GetGroupNames = require('./services/getGroupNames');
 const GetSettleModal = require('./services/getSettleModal');
+const GetGroupData = require('./services/getGroupData');
+const GetExpenseDetails = require('./services/getExpenseDetails');
+const PostComment = require('./services/postComment');
+const GetComments = require('./services/getComments');
+const DeleteComment = require('./services/deleteComment');
 
 const options = {
   useNewUrlParser: true,
@@ -70,3 +75,8 @@ handleTopicRequest('get-you-owe', GetYouOwe);
 handleTopicRequest('get-you-are-owed', GetYouAreOwed);
 handleTopicRequest('get-group-names', GetGroupNames);
 handleTopicRequest('get-settle-modal', GetSettleModal);
+handleTopicRequest('get-group-data', GetGroupData);
+handleTopicRequest('get-expense-details', GetExpenseDetails);
+handleTopicRequest('post-comment', PostComment);
+handleTopicRequest('get-comments', GetComments);
+handleTopicRequest('delete-comment', DeleteComment);

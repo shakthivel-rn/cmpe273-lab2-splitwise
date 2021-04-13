@@ -34,10 +34,6 @@ router.get('/getSettleModalDetails', checkAuth, async (req, res) => {
   kafka.make_request('get-settle-modal', req.query, (err, result) => {
     res.send(result);
   });
-  /* const paidUsersIds = await Transactions
-    .find({ owedUserId: req.query.userId, paymentStatus: false }).distinct('paidUserId');
-  const paidUsers = await Users.find({ _id: paidUsersIds }, { name: 1 });
-  res.send(paidUsers); */
 });
 
 router.post('/settleAmount', checkAuth, async (req, res) => {
