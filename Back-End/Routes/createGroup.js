@@ -47,13 +47,7 @@ const profileImgUpload = multer({
 
 router.post('/', checkAuth, async (req, res) => {
   kafka.make_request('create-group', req.body, (err, result) => {
-    if (result === 400) {
-      res.status(400);
-    } else {
-      res.status(200);
-    }
-    console.log(result);
-    res.send();
+    res.sendStatus(result);
   });
 });
 
@@ -65,10 +59,8 @@ router.get('/getMemberEmails', checkAuth, async (req, res) => {
 router.post('/profile-img-upload', (req, res) => {
   profileImgUpload(req, res, (error) => {
     if (error) {
-      console.log('errors', error);
       res.json({ error });
     } else if (req.file === undefined) {
-      console.log('Error: No File Selected!');
       res.json('Error: No File Selected');
     } else {
       // If Success

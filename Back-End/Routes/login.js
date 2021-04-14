@@ -22,24 +22,6 @@ router.post('/', async (req, res) => {
       res.status(200).send(`JWT ${token}`);
     }
   });
-  /* const doc = await Users.findOne({ email: req.body.email });
-  if (doc !== null) {
-    bcrypt.compare(req.body.password, doc.password, (err, isMatch) => {
-      if (isMatch === true) {
-        req.session.user = doc;
-        const { _id, name } = doc;
-        const payload = { _id, name };
-        const token = jwt.sign(payload, secret, {
-          expiresIn: 1008000,
-        });
-        res.status(200).send(`JWT ${token}`);
-      } else {
-        res.sendStatus(401);
-      }
-    });
-  } else {
-    res.sendStatus(401);
-  } */
 });
 
 module.exports = router;

@@ -51,7 +51,7 @@ async function handle_request(message, callback) {
       newOtherUser.transactions.push.apply(otherUser.transactions, transactionIds);
       newOtherUser.save();
     });
-    callback(null, null);
+    callback(null, 200);
   } else {
     callback(null, 401);
   }

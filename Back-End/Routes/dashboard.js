@@ -38,8 +38,7 @@ router.get('/getSettleModalDetails', checkAuth, async (req, res) => {
 
 router.post('/settleAmount', checkAuth, async (req, res) => {
   kafka.make_request('settle-amount', req.body, (err, result) => {
-    console.log(result);
-    res.sendStatus(200);
+    res.sendStatus(result);
   });
 });
 

@@ -20,7 +20,7 @@ async function handle_request(message, callback) {
       otherUser.invitedGroups.push(newGroup._id);
       otherUser.save();
     });
-    callback(null, null);
+    callback(null, 200);
   } else {
     callback(null, 400);
   }

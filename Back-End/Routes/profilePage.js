@@ -98,10 +98,8 @@ router.put('/editLanguage', checkAuth, async (req, res) => {
 router.post('/profile-img-upload', (req, res) => {
   profileImgUpload(req, res, (error) => {
     if (error) {
-      console.log('errors', error);
       res.json({ error });
     } else if (req.file === undefined) {
-      console.log('Error: No File Selected!');
       res.json('Error: No File Selected');
     } else {
       // If Success

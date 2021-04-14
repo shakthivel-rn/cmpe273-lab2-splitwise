@@ -32,26 +32,6 @@ const registerUser = async (req, res) => {
       res.status(200).send(`JWT ${token}`);
     }
   });
-  /* let token = {};
-  const newUser = new Users({
-    name: req.body.name,
-    email: req.body.email,
-    password: req.body.password,
-  });
-  try {
-    const doc = await newUser.save();
-    req.session.user = doc;
-    const { _id, name } = doc;
-    const payload = { _id, name };
-    token = jwt.sign(payload, secret, {
-      expiresIn: 1008000,
-    });
-    res.status(200);
-  } catch (e) {
-    res.status(400);
-  } finally {
-    res.send(`JWT ${token}`);
-  } */
 };
 
 router.post('/', encryptionMiddleware, registerUser);
