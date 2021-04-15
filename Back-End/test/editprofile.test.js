@@ -1,32 +1,36 @@
 const request = require('supertest')('http://localhost:3001');
 const { describe, it } = require('mocha');
 
-describe('PUT /profilePage', () => {
+describe('PUT With Passport JWT Authentication /profilePage', () => {
   it('should succesfully edit name', (done) => {
     request
       .put('/profilePage/editName')
-      .send({ userId: 1, name: 'Admin' })
+      .set('Authorization', 'JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MDc3NGUyMmIzZmQ3YzQyZTgwMzQxZmEiLCJuYW1lIjoiQWRtaW4iLCJpYXQiOjE2MTg0MzQ3MjQsImV4cCI6MTYxOTQ0MjcyNH0.Fxsm8XfF56zcRnckWwNME9TxdfEKwAoTt6ARj1XrN1I')
+      .send({ userId: '60774e22b3fd7c42e80341fa', name: 'Admin' })
       .expect(200, done);
   });
 
   it('should succesfully edit email', (done) => {
     request
       .put('/profilePage/editEmail')
-      .send({ userId: 1, email: 'admin@gmail.com' })
+      .set('Authorization', 'JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MDc3NGUyMmIzZmQ3YzQyZTgwMzQxZmEiLCJuYW1lIjoiQWRtaW4iLCJpYXQiOjE2MTg0MzQ3MjQsImV4cCI6MTYxOTQ0MjcyNH0.Fxsm8XfF56zcRnckWwNME9TxdfEKwAoTt6ARj1XrN1I')
+      .send({ userId: '60774e22b3fd7c42e80341fa', email: 'admin@gmail.com' })
       .expect(200, done);
   });
 
   it('should return error for already used email', (done) => {
     request
       .put('/profilePage/editEmail')
-      .send({ userId: 1, email: 'admin@gmail.com' })
-      .expect(500, done);
+      .set('Authorization', 'JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MDc3NGUyMmIzZmQ3YzQyZTgwMzQxZmEiLCJuYW1lIjoiQWRtaW4iLCJpYXQiOjE2MTg0MzQ3MjQsImV4cCI6MTYxOTQ0MjcyNH0.Fxsm8XfF56zcRnckWwNME9TxdfEKwAoTt6ARj1XrN1I')
+      .send({ userId: '60774e22b3fd7c42e80341fa', email: 'john@gmail.com' })
+      .expect(400, done);
   });
 
   it('should succesfully edit phone number', (done) => {
     request
       .put('/profilePage/editPhoneNumber')
-      .send({ userId: 1, phone: '90987431' })
+      .set('Authorization', 'JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MDc3NGUyMmIzZmQ3YzQyZTgwMzQxZmEiLCJuYW1lIjoiQWRtaW4iLCJpYXQiOjE2MTg0MzQ3MjQsImV4cCI6MTYxOTQ0MjcyNH0.Fxsm8XfF56zcRnckWwNME9TxdfEKwAoTt6ARj1XrN1I')
+      .send({ userId: '60774e22b3fd7c42e80341fa', phone: '123-456-7890' })
       .expect(200, done);
   });
 });

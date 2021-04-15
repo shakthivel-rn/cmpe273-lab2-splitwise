@@ -263,7 +263,7 @@ ${comment.commentDetails}  `}
                         <Col>
                           <Form inline>
                             <Form.Control onChange={this.handleChangeComment} as="textarea" placeholder="Add comment" rows={3} />
-                            <Button id="commentbutton" onClick={() => { this.onSubmitComment(groupData.expenseId); }} className="mb-2">
+                            <Button onClick={() => { this.onSubmitComment(groupData.expenseId); }} className="mb-2 commentbutton">
                               Post
                             </Button>
                           </Form>

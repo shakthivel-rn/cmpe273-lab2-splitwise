@@ -1,4 +1,3 @@
-/* eslint-disable no-alert */
 import React, { Component } from 'react';
 import '../../App.css';
 import './Login.css';
@@ -11,7 +10,6 @@ import axios from 'axios';
 import jwtDecode from 'jwt-decode';
 import { Redirect } from 'react-router';
 import { connect } from 'react-redux';
-import { propTypes } from 'react-bootstrap/esm/Image';
 import SweetAlert from 'react-bootstrap-sweetalert';
 import Navigationbar from '../Navigationbar/Navigationbar';
 
@@ -145,13 +143,5 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = (dispatch) => ({
   onSubmitUser: (userData) => dispatch({ type: 'REGISTER_USER', value: userData }),
 });
-
-Login.defaultProps = {
-  onSubmitUser: () => {},
-};
-
-Login.propTypes = {
-  onSubmitUser: propTypes.func,
-};
 
 export default connect(mapStateToProps, mapDispatchToProps)(Login);

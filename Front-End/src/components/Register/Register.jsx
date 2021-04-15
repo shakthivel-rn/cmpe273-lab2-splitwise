@@ -8,7 +8,6 @@ import { Redirect } from 'react-router-dom';
 import {
   Form, Button, Container, Col, Row, Figure, Fade,
 } from 'react-bootstrap';
-import { propTypes } from 'react-bootstrap/esm/Image';
 import SweetAlert from 'react-bootstrap-sweetalert';
 import Navigationbar from '../Navigationbar/Navigationbar';
 
@@ -159,11 +158,5 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = (dispatch) => ({
   onSubmitUser: (userData) => dispatch({ type: 'REGISTER_USER', value: userData }),
 });
-Register.defaultProps = {
-  onSubmitUser: () => {},
-};
 
-Register.propTypes = {
-  onSubmitUser: propTypes.func,
-};
 export default connect(mapStateToProps, mapDispatchToProps)(Register);

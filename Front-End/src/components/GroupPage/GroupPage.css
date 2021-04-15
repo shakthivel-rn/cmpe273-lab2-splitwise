@@ -52,7 +52,7 @@
     margin-top: 8px;;
 }
 
-#commentbutton {
+.commentbutton {
     margin-top: 8px;
     background-color: rgb(255, 81, 0);
     border-color:   rgb(255, 81, 0);

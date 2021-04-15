@@ -5,12 +5,8 @@ describe('POST /login', () => {
   it('returns user data if user exist', (done) => {
     request
       .post('/login')
-      .send({ email: 'admin@gmail.com', password: 'admin' })
-      .expect(200, {
-        id: 1,
-        name: 'Admin',
-        email: 'admin@gmail.com',
-      }, done);
+      .send({ email: 'admin@gmail.com', password: 'Admin12345' })
+      .expect(200, done);
   });
 
   it('testing invalid login', () => {
