@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
-const Users = require('../ModelsMongoDB/Users');
-const Expenses = require('../ModelsMongoDB/Expenses');
+const Users = require('../../ModelsMongoDB/Users');
+const Expenses = require('../../ModelsMongoDB/Expenses');
 
 async function handle_request(message, callback) {
   const expense = await Expenses.findOne({ _id: message.expenseId });

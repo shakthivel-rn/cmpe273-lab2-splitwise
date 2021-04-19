@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 const bcrypt = require('bcryptjs');
-const Users = require('../ModelsMongoDB/Users');
+const Users = require('../../ModelsMongoDB/Users');
 
 async function handle_request(message, callback) {
   const doc = await Users.findOne({ email: message.email });

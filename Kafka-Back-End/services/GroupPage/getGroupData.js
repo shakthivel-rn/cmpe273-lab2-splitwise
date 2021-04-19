@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-const Transactions = require('../ModelsMongoDB/Transactions');
+const Transactions = require('../../ModelsMongoDB/Transactions');
 
 async function handle_request(message, callback) {
   const transactions = await Transactions.find({ groupName: message.groupName },

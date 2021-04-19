@@ -4,8 +4,6 @@ const aws = require('aws-sdk');
 const multerS3 = require('multer-s3');
 const multer = require('multer');
 const path = require('path');
-const Users = require('../ModelsMongoDB/Users');
-const Groups = require('../ModelsMongoDB/Groups');
 const { checkAuth } = require('../Utils/passport');
 const kafka = require('../kafka/client');
 
@@ -52,8 +50,9 @@ router.post('/', checkAuth, async (req, res) => {
 });
 
 router.get('/getMemberEmails', checkAuth, async (req, res) => {
-  const memberEmails = await Users.find({}, { email: 1 });
-  res.send(memberEmails);
+  kafka.make_request('get-member-emails', req.query, (err, result) => {
+    res.send(result);
+  });
 });
 
 router.post('/profile-img-upload', (req, res) => {
@@ -76,10 +75,9 @@ router.post('/profile-img-upload', (req, res) => {
 });
 
 router.post('/storeImage', async (req, res) => {
-  const group = await Groups.findOne({ name: req.body.groupName });
-  group.image = req.body.fileLocation;
-  group.save();
-  res.sendStatus(200);
+  kafka.make_request('store-group-image', req.body, (err, result) => {
+    res.sendStatus(result);
+  });
 });
 
 module.exports = router;

@@ -1,9 +1,9 @@
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable camelcase */
-const Users = require('../ModelsMongoDB/Users');
-const Groups = require('../ModelsMongoDB/Groups');
-const Expenses = require('../ModelsMongoDB/Expenses');
-const Transactions = require('../ModelsMongoDB/Transactions');
+const Users = require('../../ModelsMongoDB/Users');
+const Groups = require('../../ModelsMongoDB/Groups');
+const Expenses = require('../../ModelsMongoDB/Expenses');
+const Transactions = require('../../ModelsMongoDB/Transactions');
 
 async function handle_request(message, callback) {
   const creatorUser = await Users.findOne({ _id: message.userId });

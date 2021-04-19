@@ -1,7 +1,8 @@
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable camelcase */
-const Users = require('../ModelsMongoDB/Users');
-const Transactions = require('../ModelsMongoDB/Transactions');
+const Users = require('../../ModelsMongoDB/Users');
+const Groups = require('../../ModelsMongoDB/Groups');
+const Transactions = require('../../ModelsMongoDB/Transactions');
 
 async function handle_request(message, callback) {
   const allUsers = await Users.find({});
@@ -10,14 +11,27 @@ async function handle_request(message, callback) {
     allUsersNames[allUser._id] = allUser.name;
   });
   const user = await Users.findOne({ _id: message.userId });
-  const groupTransactions = await Transactions
-    .find({ groupName: message.groupName, expenseId: message.expenseId });
+  const groupIds = user.joinedGroups;
+  const memberGroups = await Groups.find({ _id: groupIds });
+  const memberGroupsNames = memberGroups.map((memberGroup) => memberGroup.name);
+  const { order, selectedGroup } = message;
+  let groupTransactions = [];
+  if (order === 'asc' && selectedGroup === 'All') {
+    groupTransactions = await Transactions.find({ groupName: memberGroupsNames }).sort({ time: 1 });
+  } else if (order === 'asc') {
+    groupTransactions = await Transactions.find({ groupName: selectedGroup }).sort({ time: 1 });
+  } else if (order === 'desc' && selectedGroup === 'All') {
+    groupTransactions = await Transactions.find({ groupName: memberGroupsNames }).sort({ time: 'desc' });
+  } else {
+    groupTransactions = await Transactions.find({ groupName: selectedGroup }).sort({ time: 'desc' });
+  }
   const result = groupTransactions.map((groupTransaction) => {
     if (groupTransaction.paidUserId.equals(groupTransaction.owedUserId)
-          && groupTransaction.paidUserId.equals(user._id)) {
+        && groupTransaction.paidUserId.equals(user._id)) {
       return ({
         expenseName: groupTransaction.expenseDescription,
         expenseAmount: groupTransaction.expenseAmount,
+        groupName: groupTransaction.groupName,
         paidUserName: 'You',
         owedUserName: 'You',
         splitAmount: groupTransaction.splitAmount,
@@ -29,6 +43,7 @@ async function handle_request(message, callback) {
       return ({
         expenseName: groupTransaction.expenseDescription,
         expenseAmount: groupTransaction.expenseAmount,
+        groupName: groupTransaction.groupName,
         paidUserName: allUsersNames[groupTransaction.paidUserId],
         owedUserName: allUsersNames[groupTransaction.owedUserId],
         splitAmount: groupTransaction.splitAmount,
@@ -37,10 +52,11 @@ async function handle_request(message, callback) {
     }
 
     if (groupTransaction.paymentStatus === true
-          && groupTransaction.paidUserId.equals(user._id)) {
+        && groupTransaction.paidUserId.equals(user._id)) {
       return ({
         expenseName: groupTransaction.expenseDescription,
         expenseAmount: groupTransaction.expenseAmount,
+        groupName: groupTransaction.groupName,
         paidUserName: 'You',
         owedUserName: allUsersNames[groupTransaction.owedUserId],
         splitAmount: groupTransaction.splitAmount,
@@ -49,20 +65,23 @@ async function handle_request(message, callback) {
     }
 
     if (groupTransaction.paymentStatus === true
-          && groupTransaction.owedUserId.equals(user._id)) {
+        && groupTransaction.owedUserId.equals(user._id)) {
       return ({
         expenseName: groupTransaction.expenseDescription,
         expenseAmount: groupTransaction.expenseAmount,
+        groupName: groupTransaction.groupName,
         paidUserName: allUsersNames[groupTransaction.paidUserId],
         owedUserName: 'You',
         splitAmount: groupTransaction.splitAmount,
         status: 'paid',
       });
     }
+
     if (groupTransaction.paymentStatus === true) {
       return ({
         expenseName: groupTransaction.expenseDescription,
         expenseAmount: groupTransaction.expenseAmount,
+        groupName: groupTransaction.groupName,
         paidUserName: allUsersNames[groupTransaction.paidUserId],
         owedUserName: allUsersNames[groupTransaction.owedUserId],
         splitAmount: groupTransaction.splitAmount,
@@ -74,6 +93,7 @@ async function handle_request(message, callback) {
       return ({
         expenseName: groupTransaction.expenseDescription,
         expenseAmount: groupTransaction.expenseAmount,
+        groupName: groupTransaction.groupName,
         paidUserName: 'You',
         owedUserName: allUsersNames[groupTransaction.owedUserId],
         splitAmount: groupTransaction.splitAmount,
@@ -85,6 +105,7 @@ async function handle_request(message, callback) {
       return ({
         expenseName: groupTransaction.expenseDescription,
         expenseAmount: groupTransaction.expenseAmount,
+        groupName: groupTransaction.groupName,
         paidUserName: allUsersNames[groupTransaction.paidUserId],
         owedUserName: 'You',
         splitAmount: groupTransaction.splitAmount,
@@ -95,13 +116,18 @@ async function handle_request(message, callback) {
     return ({
       expenseName: groupTransaction.expenseDescription,
       expenseAmount: groupTransaction.expenseAmount,
+      groupName: groupTransaction.groupName,
       paidUserName: allUsersNames[groupTransaction.paidUserId],
       owedUserName: allUsersNames[groupTransaction.owedUserId],
       splitAmount: groupTransaction.splitAmount,
       status: 'owes',
     });
   });
-  callback(null, result);
+  const { pageNumber, pageSize } = message;
+  const lastIndex = pageNumber * pageSize;
+  const firstIndex = lastIndex - pageSize;
+  const paginatedResult = result.slice(firstIndex, lastIndex);
+  callback(null, paginatedResult);
 }
 
 exports.handle_request = handle_request;

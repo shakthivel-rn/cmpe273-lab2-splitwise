@@ -3,7 +3,7 @@ const aws = require('aws-sdk');
 const multerS3 = require('multer-s3');
 const multer = require('multer');
 const path = require('path');
-const Users = require('../ModelsMongoDB/Users');
+const kafka = require('../kafka/client');
 const { checkAuth } = require('../Utils/passport');
 
 const router = express.Router();
@@ -43,56 +43,45 @@ const profileImgUpload = multer({
 }).single('profileImage');
 
 router.get('/getUserDetails', checkAuth, async (req, res) => {
-  const user = await Users.findOne({ _id: req.query.userId });
-  res.send(user);
+  kafka.make_request('get-user-details', req.query, (err, result) => {
+    res.send(result);
+  });
 });
 
 router.put('/editName', checkAuth, async (req, res) => {
-  const user = await Users.findOne({ _id: req.body.userId });
-  user.name = req.body.name;
-  user.save();
-  res.send();
+  kafka.make_request('edit-name', req.body, (err, result) => {
+    res.sendStatus(result);
+  });
 });
 
 router.put('/editEmail', checkAuth, async (req, res) => {
-  const user = await Users.findOne({ _id: req.body.userId });
-  try {
-    user.email = req.body.email;
-    await user.save();
-    res.status(200);
-  } catch {
-    res.status(400);
-  } finally {
-    res.send();
-  }
+  kafka.make_request('edit-email', req.body, (err, result) => {
+    res.sendStatus(result);
+  });
 });
 
 router.put('/editPhoneNumber', checkAuth, async (req, res) => {
-  const user = await Users.findOne({ _id: req.body.userId });
-  user.phoneNumber = req.body.phone;
-  user.save();
-  res.send();
+  kafka.make_request('edit-phonenumber', req.body, (err, result) => {
+    res.sendStatus(result);
+  });
 });
 
 router.put('/editDefaultCurrency', checkAuth, async (req, res) => {
-  const user = await Users.findOne({ _id: req.body.userId });
-  user.defaultCurrency = req.body.defaultcurrency;
-  user.save();
-  res.send();
+  kafka.make_request('edit-defaultcurrency', req.body, (err, result) => {
+    res.sendStatus(result);
+  });
 });
 
 router.put('/editTimeZone', checkAuth, async (req, res) => {
-  const user = await Users.findOne({ _id: req.body.userId });
-  user.timezone = req.body.timezone;
-  user.save();
-  res.send();
+  kafka.make_request('edit-timezone', req.body, (err, result) => {
+    res.sendStatus(result);
+  });
 });
 
 router.put('/editLanguage', checkAuth, async (req, res) => {
-  const user = await Users.findOne({ _id: req.body.userId });
-  user.language = req.body.language;
-  user.save();
-  res.send();
+  kafka.make_request('edit-language', req.body, (err, result) => {
+    res.sendStatus(result);
+  });
 });
 
 router.post('/profile-img-upload', (req, res) => {
@@ -115,15 +104,15 @@ router.post('/profile-img-upload', (req, res) => {
 });
 
 router.post('/storeImage', async (req, res) => {
-  const user = await Users.findOne({ _id: req.body.userId });
-  user.userImage = req.body.fileLocation;
-  user.save();
-  res.sendStatus(200);
+  kafka.make_request('store-user-image', req.body, (err, result) => {
+    res.sendStatus(result);
+  });
 });
 
 router.get('/getImage', async (req, res) => {
-  const user = await Users.findOne({ _id: req.query.userId }, { userImage: 1 });
-  res.send(user);
+  kafka.make_request('get-user-image', req.query, (err, result) => {
+    res.send(result);
+  });
 });
 
 module.exports = router;

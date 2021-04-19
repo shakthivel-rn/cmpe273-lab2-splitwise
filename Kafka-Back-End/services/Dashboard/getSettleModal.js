@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
-const Users = require('../ModelsMongoDB/Users');
-const Transactions = require('../ModelsMongoDB/Transactions');
+const Users = require('../../ModelsMongoDB/Users');
+const Transactions = require('../../ModelsMongoDB/Transactions');
 
 async function handle_request(message, callback) {
   const paidUsersIds = await Transactions

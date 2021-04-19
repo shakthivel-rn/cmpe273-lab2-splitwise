@@ -1,7 +1,7 @@
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable camelcase */
-const Users = require('../ModelsMongoDB/Users');
-const Transactions = require('../ModelsMongoDB/Transactions');
+const Users = require('../../ModelsMongoDB/Users');
+const Transactions = require('../../ModelsMongoDB/Transactions');
 
 async function handle_request(message, callback) {
   const user = await Users.findOne({ _id: message.userId });

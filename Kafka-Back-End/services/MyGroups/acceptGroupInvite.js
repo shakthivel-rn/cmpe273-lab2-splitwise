@@ -1,7 +1,7 @@
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable camelcase */
-const Users = require('../ModelsMongoDB/Users');
-const Groups = require('../ModelsMongoDB/Groups');
+const Users = require('../../ModelsMongoDB/Users');
+const Groups = require('../../ModelsMongoDB/Groups');
 
 async function handle_request(message, callback) {
   const group = await Groups.findOne({ _id: message.groupId });

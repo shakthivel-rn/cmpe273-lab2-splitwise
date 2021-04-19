@@ -1,6 +1,5 @@
 /* eslint-disable no-underscore-dangle */
 const express = require('express');
-const Groups = require('../ModelsMongoDB/Groups');
 const kafka = require('../kafka/client');
 const { checkAuth } = require('../Utils/passport');
 
@@ -37,8 +36,9 @@ router.post('/deleteComment', checkAuth, async (req, res) => {
 });
 
 router.get('/getImage', async (req, res) => {
-  const group = await Groups.findOne({ name: req.query.groupName }, { image: 1 });
-  res.send(group);
+  kafka.make_request('get-group-image', req.query, (err, result) => {
+    res.send(result);
+  });
 });
 
 module.exports = router;

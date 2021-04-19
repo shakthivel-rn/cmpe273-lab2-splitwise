@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-const Users = require('../ModelsMongoDB/Users');
+const Users = require('../../ModelsMongoDB/Users');
 
 async function handle_request(message, callback) {
   let doc = {};

@@ -1,8 +1,8 @@
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable camelcase */
-const Users = require('../ModelsMongoDB/Users');
-const Groups = require('../ModelsMongoDB/Groups');
-const Transactions = require('../ModelsMongoDB/Transactions');
+const Users = require('../../ModelsMongoDB/Users');
+const Groups = require('../../ModelsMongoDB/Groups');
+const Transactions = require('../../ModelsMongoDB/Transactions');
 
 async function handle_request(message, callback) {
   let status = 401;
