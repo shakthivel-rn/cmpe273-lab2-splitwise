@@ -8,6 +8,7 @@ import {
   Button, Form,
 } from 'react-bootstrap';
 import SweetAlert from 'react-bootstrap-sweetalert';
+import BACKEND_URL from '../../constants/constants';
 
 class AddExpenseForm extends Component {
   constructor(props) {
@@ -54,8 +55,8 @@ class AddExpenseForm extends Component {
       expenseDescription,
       expenseAmount,
     };
-    axios.defaults.withCredentials = true;
-    axios.post('http://localhost:3001/createExpense', data)
+    axios.defaults.headers.common.authorization = localStorage.getItem('token');
+    axios.post(`${BACKEND_URL}/createExpense`, data)
       .then(getGroupDetails)
       .catch(() => {
         this.setState({

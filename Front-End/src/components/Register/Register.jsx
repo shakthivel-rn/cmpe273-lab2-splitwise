@@ -10,6 +10,7 @@ import {
 } from 'react-bootstrap';
 import SweetAlert from 'react-bootstrap-sweetalert';
 import Navigationbar from '../Navigationbar/Navigationbar';
+import BACKEND_URL from '../../constants/constants';
 
 class Register extends Component {
   constructor(props) {
@@ -61,7 +62,7 @@ class Register extends Component {
       password,
     };
     axios.defaults.withCredentials = true;
-    axios.post('http://localhost:3001/register', data)
+    axios.post(`${BACKEND_URL}/register`, data)
       .then((response) => {
         const { onSubmitUser } = this.props;
         localStorage.setItem('token', response.data);

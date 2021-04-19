@@ -11,6 +11,7 @@ import axios from 'axios';
 import { connect } from 'react-redux';
 import Navigationbar from '../Navigationbar/Navigationbar';
 import DashboardSideBar from '../Dashboard/DashboardSideBar';
+import BACKEND_URL from '../../constants/constants';
 
 class RecentActivity extends Component {
   constructor(props) {
@@ -40,7 +41,8 @@ class RecentActivity extends Component {
     } = this.state;
     const { onGetRecentActivity } = this.props;
     const pageNumber = 1;
-    const res = await axios.get('http://localhost:3001/recentActivity', {
+    axios.defaults.headers.common.authorization = localStorage.getItem('token');
+    const res = await axios.get(`${BACKEND_URL}/recentActivity`, {
       params: {
         userId, pageNumber, pageSize, order, selectedGroup,
       },
@@ -51,11 +53,13 @@ class RecentActivity extends Component {
       fadeFlag: true,
     });
     onGetRecentActivity(res.data);
-    const response = await axios.get('http://localhost:3001/recentActivity/getPaginationNumbers', { params: { userId, pageSize, selectedGroup } });
+    axios.defaults.headers.common.authorization = localStorage.getItem('token');
+    const response = await axios.get(`${BACKEND_URL}/recentActivity/getPaginationNumbers`, { params: { userId, pageSize, selectedGroup } });
     this.setState({
       paginationNumber: response.data.paginationNumber,
     });
-    const groupNames = await axios.get('http://localhost:3001/dashboard/getGroupNames', { params: { userId } });
+    axios.defaults.headers.common.authorization = localStorage.getItem('token');
+    const groupNames = await axios.get(`${BACKEND_URL}/dashboard/getGroupNames`, { params: { userId } });
     this.setState({
       groupList: [...groupNames.data],
     });
@@ -70,12 +74,14 @@ class RecentActivity extends Component {
       userId, pageSize, order, selectedGroup,
     } = this.state;
     const { onGetRecentActivity } = this.props;
-    const res = await axios.get('http://localhost:3001/recentActivity/getPaginationNumbers', { params: { userId, pageSize, selectedGroup } });
+    axios.defaults.headers.common.authorization = localStorage.getItem('token');
+    const res = await axios.get(`${BACKEND_URL}/recentActivity/getPaginationNumbers`, { params: { userId, pageSize, selectedGroup } });
     this.setState({
       paginationNumber: res.data.paginationNumber,
     });
     const pageNumber = 1;
-    const response = await axios.get('http://localhost:3001/recentActivity', {
+    axios.defaults.headers.common.authorization = localStorage.getItem('token');
+    const response = await axios.get(`${BACKEND_URL}/recentActivity`, {
       params: {
         userId, pageNumber, pageSize, order, selectedGroup,
       },
@@ -97,7 +103,8 @@ class RecentActivity extends Component {
     } = this.state;
     const { onGetRecentActivity } = this.props;
     const pageNumber = pagenumber;
-    const res = await axios.get('http://localhost:3001/recentActivity', {
+    axios.defaults.headers.common.authorization = localStorage.getItem('token');
+    const res = await axios.get(`${BACKEND_URL}/recentActivity`, {
       params: {
         userId, pageNumber, pageSize, order, selectedGroup,
       },
@@ -120,7 +127,8 @@ class RecentActivity extends Component {
     } = this.state;
     const { onGetRecentActivity } = this.props;
     const pageNumber = 1;
-    const response = await axios.get('http://localhost:3001/recentActivity', {
+    axios.defaults.headers.common.authorization = localStorage.getItem('token');
+    const response = await axios.get(`${BACKEND_URL}/recentActivity`, {
       params: {
         userId, pageNumber, pageSize, order, selectedGroup,
       },
@@ -142,12 +150,14 @@ class RecentActivity extends Component {
       userId, pageSize, order, selectedGroup,
     } = this.state;
     const { onGetRecentActivity } = this.props;
-    const res = await axios.get('http://localhost:3001/recentActivity/getPaginationNumbers', { params: { userId, pageSize, selectedGroup } });
+    axios.defaults.headers.common.authorization = localStorage.getItem('token');
+    const res = await axios.get(`${BACKEND_URL}/recentActivity/getPaginationNumbers`, { params: { userId, pageSize, selectedGroup } });
     this.setState({
       paginationNumber: res.data.paginationNumber,
     });
     const pageNumber = 1;
-    const response = await axios.get('http://localhost:3001/recentActivity', {
+    axios.defaults.headers.common.authorization = localStorage.getItem('token');
+    const response = await axios.get(`${BACKEND_URL}/recentActivity`, {
       params: {
         userId, pageNumber, pageSize, order, selectedGroup,
       },

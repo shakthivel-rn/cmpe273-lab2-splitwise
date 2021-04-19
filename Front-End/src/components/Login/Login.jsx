@@ -12,6 +12,7 @@ import { Redirect } from 'react-router';
 import { connect } from 'react-redux';
 import SweetAlert from 'react-bootstrap-sweetalert';
 import Navigationbar from '../Navigationbar/Navigationbar';
+import BACKEND_URL from '../../constants/constants';
 
 class Login extends Component {
   constructor(props) {
@@ -54,7 +55,7 @@ class Login extends Component {
       password,
     };
     axios.defaults.withCredentials = true;
-    axios.post('http://localhost:3001/login', data)
+    axios.post(`${BACKEND_URL}/login`, data)
       .then((response) => {
         const { onSubmitUser } = this.props;
         localStorage.setItem('token', response.data);

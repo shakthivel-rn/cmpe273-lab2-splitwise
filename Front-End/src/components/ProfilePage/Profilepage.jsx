@@ -12,6 +12,7 @@ import { connect } from 'react-redux';
 import SweetAlert from 'react-bootstrap-sweetalert';
 import Navigationbar from '../Navigationbar/Navigationbar';
 import ProfileImage from './ProfileImage';
+import BACKEND_URL from '../../constants/constants';
 
 class Profilepage extends Component {
   constructor(props) {
@@ -42,12 +43,36 @@ class Profilepage extends Component {
     this.editDefaultCurrency = this.editDefaultCurrency.bind(this);
     this.editTimeZone = this.editTimeZone.bind(this);
     this.editLanguage = this.editLanguage.bind(this);
+    this.getUserDetails = this.getUserDetails.bind(this);
   }
 
   async componentDidMount() {
-    const { userId } = this.state;
+    this.getUserDetails();
+    /* const { userId } = this.state;
+    const { onGetUserDetails } = this.props;
     axios.defaults.headers.common.authorization = localStorage.getItem('token');
     const res = await axios.get('http://localhost:3001/profilePage/getUserDetails', { params: { userId } });
+    onGetUserDetails(res.data);
+    this.setState({
+      name: res.data.name,
+      email: res.data.email,
+      phone: res.data.phoneNumber ? res.data.phoneNumber : 'Your Phonenumber',
+      defaultcurrency: res.data.defaultCurrency ? res.data.defaultCurrency : 'Choose Currency',
+      timezone: res.data.timezone ? res.data.timezone : 'Choose Timezone',
+      language: res.data.language ? res.data.language : 'Choose Language',
+      fadeFlag: true,
+      submitFlag: false,
+      errorFlag: false,
+    });
+    this.getUserDetails = this.getUserDetails.bind(this); */
+  }
+
+  async getUserDetails() {
+    const { userId } = this.state;
+    const { onGetUserDetails } = this.props;
+    axios.defaults.headers.common.authorization = localStorage.getItem('token');
+    const res = await axios.get(`${BACKEND_URL}/profilePage/getUserDetails`, { params: { userId } });
+    onGetUserDetails(res.data);
     this.setState({
       name: res.data.name,
       email: res.data.email,
@@ -104,8 +129,8 @@ class Profilepage extends Component {
       name,
       userId,
     };
-    axios.defaults.withCredentials = true;
-    axios.put('http://localhost:3001/profilePage/editName', data)
+    axios.defaults.headers.common.authorization = localStorage.getItem('token');
+    axios.put(`${BACKEND_URL}/profilePage/editName`, data)
       .then(() => {
         this.setState({
           submitFlag: true,
@@ -120,8 +145,8 @@ class Profilepage extends Component {
       email,
       userId,
     };
-    axios.defaults.withCredentials = true;
-    axios.put('http://localhost:3001/profilePage/editEmail', data)
+    axios.defaults.headers.common.authorization = localStorage.getItem('token');
+    axios.put(`${BACKEND_URL}/profilePage/editEmail`, data)
       .then(() => {
         this.setState({
           submitFlag: true,
@@ -142,8 +167,8 @@ class Profilepage extends Component {
       phone,
       userId,
     };
-    axios.defaults.withCredentials = true;
-    axios.put('http://localhost:3001/profilePage/editPhoneNumber', data)
+    axios.defaults.headers.common.authorization = localStorage.getItem('token');
+    axios.put(`${BACKEND_URL}/profilePage/editPhoneNumber`, data)
       .then(() => {
         this.setState({
           submitFlag: true,
@@ -158,8 +183,8 @@ class Profilepage extends Component {
       defaultcurrency,
       userId,
     };
-    axios.defaults.withCredentials = true;
-    axios.put('http://localhost:3001/profilePage/editDefaultCurrency', data)
+    axios.defaults.headers.common.authorization = localStorage.getItem('token');
+    axios.put(`${BACKEND_URL}/profilePage/editDefaultCurrency`, data)
       .then(() => {
         this.setState({
           submitFlag: true,
@@ -174,8 +199,8 @@ class Profilepage extends Component {
       timezone,
       userId,
     };
-    axios.defaults.withCredentials = true;
-    axios.put('http://localhost:3001/profilePage/editTimeZone', data)
+    axios.defaults.headers.common.authorization = localStorage.getItem('token');
+    axios.put(`${BACKEND_URL}/profilePage/editTimeZone`, data)
       .then(() => {
         this.setState({
           submitFlag: true,
@@ -190,8 +215,8 @@ class Profilepage extends Component {
       language,
       userId,
     };
-    axios.defaults.withCredentials = true;
-    axios.put('http://localhost:3001/profilePage/editLanguage', data)
+    axios.defaults.headers.common.authorization = localStorage.getItem('token');
+    axios.put(`${BACKEND_URL}/profilePage/editLanguage`, data)
       .then(() => {
         this.setState({
           submitFlag: true,
@@ -214,6 +239,7 @@ class Profilepage extends Component {
               this.setState({
                 submitFlag: false,
               });
+              this.getUserDetails();
             }}
           />
         ) : null}
@@ -342,4 +368,8 @@ const mapStateToProps = (state) => ({
   userIdRedux: state.id,
 });
 
-export default connect(mapStateToProps)(Profilepage);
+const mapDispatchToProps = (dispatch) => ({
+  onGetUserDetails: (userData) => dispatch({ type: 'GET_USER_DETAILS', value: userData }),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Profilepage);

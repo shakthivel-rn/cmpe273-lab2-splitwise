@@ -10,6 +10,7 @@ import {
 import axios from 'axios';
 import { connect } from 'react-redux';
 import SweetAlert from 'react-bootstrap-sweetalert';
+import BACKEND_URL from '../../constants/constants';
 
 function Dashboardbox(props) {
   const [userId] = useState(props.userIdRedux);
@@ -22,13 +23,15 @@ function Dashboardbox(props) {
   const [settledBalanceFlag, setSettledBalanceFlag] = useState(false);
 
   const getFriendsDetails = async () => {
-    const res = await axios.get('http://localhost:3001/dashboard/getSettleModalDetails', { params: { userId } });
+    axios.defaults.headers.common.authorization = localStorage.getItem('token');
+    const res = await axios.get(`${BACKEND_URL}/dashboard/getSettleModalDetails`, { params: { userId } });
     setFriends([...res.data]);
     const { onGetSettleUserNames } = props;
     onGetSettleUserNames(res.data);
   };
   const getPaidAndOwedAmount = async () => {
-    const res = await axios.get('http://localhost:3001/dashboard/getTotalPaidAndOwedAmount', { params: { userId } });
+    axios.defaults.headers.common.authorization = localStorage.getItem('token');
+    const res = await axios.get(`${BACKEND_URL}/dashboard/getTotalPaidAndOwedAmount`, { params: { userId } });
     setYouOwe(res.data.totalOwedAmount);
     setYouAreOwed(res.data.totalPaidAmount);
     const totalBalanceValue = res.data.totalPaidAmount - res.data.totalOwedAmount;
@@ -40,7 +43,8 @@ function Dashboardbox(props) {
   useEffect(() => {
     // eslint-disable-next-line no-shadow
     const getPaidAndOwedAmount = async () => {
-      const res = await axios.get('http://localhost:3001/dashboard/getTotalPaidAndOwedAmount', { params: { userId } });
+      axios.defaults.headers.common.authorization = localStorage.getItem('token');
+      const res = await axios.get(`${BACKEND_URL}/dashboard/getTotalPaidAndOwedAmount`, { params: { userId } });
       setYouOwe(res.data.totalOwedAmount);
       setYouAreOwed(res.data.totalPaidAmount);
       const totalBalanceValue = res.data.totalPaidAmount - res.data.totalOwedAmount;
@@ -51,7 +55,8 @@ function Dashboardbox(props) {
     };
     // eslint-disable-next-line no-shadow
     const getFriendsDetails = async () => {
-      const res = await axios.get('http://localhost:3001/dashboard/getSettleModalDetails', { params: { userId } });
+      axios.defaults.headers.common.authorization = localStorage.getItem('token');
+      const res = await axios.get(`${BACKEND_URL}/dashboard/getSettleModalDetails`, { params: { userId } });
       setFriends([...res.data]);
       const { onGetSettleUserNames } = props;
       onGetSettleUserNames(res.data);
@@ -62,7 +67,8 @@ function Dashboardbox(props) {
 
   const onSettleUp = async (friendId) => {
     const data = { userId, friendId };
-    await axios.post('http://localhost:3001/dashboard/settleAmount', data)
+    axios.defaults.headers.common.authorization = localStorage.getItem('token');
+    await axios.post(`${BACKEND_URL}/dashboard/settleAmount`, data)
       .then(() => {
         setSettledBalanceFlag(true);
       });

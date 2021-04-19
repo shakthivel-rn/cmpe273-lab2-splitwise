@@ -14,6 +14,7 @@ import SweetAlert from 'react-bootstrap-sweetalert';
 import Navigationbar from '../Navigationbar/Navigationbar';
 import DashboardSideBar from '../Dashboard/DashboardSideBar';
 import AddExpenseForm from './AddExpenseForm';
+import BACKEND_URL from '../../constants/constants';
 
 class GroupPage extends Component {
   constructor(props) {
@@ -55,14 +56,16 @@ class GroupPage extends Component {
 
   async componentDidMount() {
     const { userId, groupName } = this.state;
-    const res = await axios.get('http://localhost:3001/groupPage', { params: { userId, groupName } });
+    axios.defaults.headers.common.authorization = localStorage.getItem('token');
+    const res = await axios.get(`${BACKEND_URL}/groupPage`, { params: { userId, groupName } });
     this.setState({
       groupDatas: [...res.data],
       fadeFlag: true,
     });
     const { onGetGroupDetails } = this.props;
     onGetGroupDetails(res.data);
-    const response = await axios.get('http://localhost:3001/groupPage/getImage', { params: { groupName } });
+    axios.defaults.headers.common.authorization = localStorage.getItem('token');
+    const response = await axios.get(`${BACKEND_URL}/groupPage/getImage`, { params: { groupName } });
     this.setState({
       imagePreview: response.data.image,
     });
@@ -71,7 +74,8 @@ class GroupPage extends Component {
   async componentDidUpdate(prevProps, prevState) {
     const { userId, groupName } = this.state;
     if (groupName !== prevState.groupName) {
-      const res = await axios.get('http://localhost:3001/groupPage', { params: { userId, groupName } });
+      axios.defaults.headers.common.authorization = localStorage.getItem('token');
+      const res = await axios.get(`${BACKEND_URL}/groupPage`, { params: { userId, groupName } });
       // eslint-disable-next-line react/no-did-update-set-state
       this.setState({
         groupDatas: [...res.data],
@@ -79,7 +83,8 @@ class GroupPage extends Component {
       });
       const { onGetGroupDetails } = this.props;
       onGetGroupDetails(res.data);
-      const response = await axios.get('http://localhost:3001/groupPage/getImage', { params: { groupName } });
+      axios.defaults.headers.common.authorization = localStorage.getItem('token');
+      const response = await axios.get(`${BACKEND_URL}/groupPage/getImage`, { params: { groupName } });
       // eslint-disable-next-line react/no-did-update-set-state
       this.setState({
         imagePreview: response.data.image,
@@ -89,7 +94,8 @@ class GroupPage extends Component {
 
   async getGroupDetails() {
     const { userId, groupName } = this.state;
-    const res = await axios.get('http://localhost:3001/groupPage', { params: { userId, groupName } });
+    axios.defaults.headers.common.authorization = localStorage.getItem('token');
+    const res = await axios.get(`${BACKEND_URL}/groupPage`, { params: { userId, groupName } });
     this.setState({
       groupDatas: [...res.data],
       fadeFlag: true,
@@ -102,8 +108,9 @@ class GroupPage extends Component {
   async getExpenseDetails(expenseId) {
     const { userId, groupName } = this.state;
     const { onGetExpenseDetails, onGetComments } = this.props;
-    const res = await axios.get('http://localhost:3001/groupPage/getExpenseDetail', { params: { userId, groupName, expenseId } });
-    const response = await axios.get('http://localhost:3001/groupPage/getComments', { params: { userId, expenseId } });
+    axios.defaults.headers.common.authorization = localStorage.getItem('token');
+    const res = await axios.get(`${BACKEND_URL}/groupPage/getExpenseDetail`, { params: { userId, groupName, expenseId } });
+    const response = await axios.get(`${BACKEND_URL}/groupPage/getComments`, { params: { userId, expenseId } });
     this.setState({
       expenseDatas: [...res.data],
       expenseFadeFlag: true,
@@ -126,7 +133,8 @@ class GroupPage extends Component {
       userId,
       comment,
     };
-    axios.post('http://localhost:3001/groupPage/postComment', data)
+    axios.defaults.headers.common.authorization = localStorage.getItem('token');
+    axios.post(`${BACKEND_URL}/groupPage/postComment`, data)
       .then(() => {
         this.getExpenseDetails(expenseId);
       });
@@ -137,7 +145,8 @@ class GroupPage extends Component {
       expenseId,
       commentIndex,
     };
-    axios.post('http://localhost:3001/groupPage/deleteComment', data)
+    axios.defaults.headers.common.authorization = localStorage.getItem('token');
+    axios.post(`${BACKEND_URL}/groupPage/deleteComment`, data)
       .then(() => {
         this.getExpenseDetails(expenseId);
       });

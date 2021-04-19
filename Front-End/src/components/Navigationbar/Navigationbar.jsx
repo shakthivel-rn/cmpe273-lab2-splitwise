@@ -8,6 +8,7 @@ import { Link } from 'react-router-dom';
 import {
   Navbar, Nav, Button, Dropdown, Image,
 } from 'react-bootstrap';
+import BACKEND_URL from '../../constants/constants';
 
 class Navigationbar extends Component {
   constructor(props) {
@@ -27,7 +28,7 @@ class Navigationbar extends Component {
 
   getUserProfileImage = async () => {
     const { userId } = this.state;
-    const res = await axios.get('http://localhost:3001/profilePage/getImage', { params: { userId } });
+    const res = await axios.get(`${BACKEND_URL}/profilePage/getImage`, { params: { userId } });
     this.setState({
       imagePreview: res.data.userImage,
     });

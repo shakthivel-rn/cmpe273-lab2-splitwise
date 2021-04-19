@@ -7,6 +7,7 @@ import './ProfileImage.css';
 import axios from 'axios';
 import { connect } from 'react-redux';
 import SweetAlert from 'react-bootstrap-sweetalert';
+import BACKEND_URL from '../../constants/constants';
 
 class ProfileImage extends Component {
   constructor(props) {
@@ -24,7 +25,7 @@ class ProfileImage extends Component {
 
   async componentDidMount() {
     const { userId } = this.state;
-    const res = await axios.get('http://localhost:3001/profilePage/getImage', { params: { userId } });
+    const res = await axios.get(`${BACKEND_URL}/profilePage/getImage`, { params: { userId } });
     this.setState({
       imagePreview: res.data.userImage,
     });
@@ -46,7 +47,7 @@ class ProfileImage extends Component {
     if (selectedFile) {
       data.append('profileImage', selectedFile, selectedFile.name);
       axios.defaults.withCredentials = true;
-      axios.post('http://localhost:3001/profilePage/profile-img-upload', data, {
+      axios.post(`${BACKEND_URL}/profilePage/profile-img-upload`, data, {
         headers: {
           accept: 'application/json',
           'Accept-Language': 'en-US,en;q=0.8',
@@ -64,7 +65,7 @@ class ProfileImage extends Component {
             fileLocation,
           };
           axios.defaults.withCredentials = true;
-          axios.post('http://localhost:3001/profilePage/storeImage', userData)
+          axios.post(`${BACKEND_URL}/profilePage/storeImage`, userData)
             .then(() => {
               this.setState({
                 imageUploadedFlag: true,

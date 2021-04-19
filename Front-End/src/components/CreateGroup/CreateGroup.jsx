@@ -11,6 +11,7 @@ import axios from 'axios';
 import { connect } from 'react-redux';
 import SweetAlert from 'react-bootstrap-sweetalert';
 import Navigationbar from '../Navigationbar/Navigationbar';
+import BACKEND_URL from '../../constants/constants';
 
 class CreateGroup extends Component {
   constructor(props) {
@@ -40,7 +41,7 @@ class CreateGroup extends Component {
 
   async componentDidMount() {
     axios.defaults.headers.common.authorization = localStorage.getItem('token');
-    const res = await axios.get('http://localhost:3001/createGroup/getMemberEmails');
+    const res = await axios.get(`${BACKEND_URL}/createGroup/getMemberEmails`);
     this.setState({
       fadeFlag: true,
       inputEmails: [...res.data],
@@ -80,7 +81,8 @@ class CreateGroup extends Component {
       memberEmails,
       groupName,
     };
-    axios.post('http://localhost:3001/createGroup', data)
+    axios.defaults.headers.common.authorization = localStorage.getItem('token');
+    axios.post(`${BACKEND_URL}/createGroup`, data)
       .then(() => {
         this.setState({
           groupCreatedFlag: true,
@@ -97,7 +99,7 @@ class CreateGroup extends Component {
     if (selectedFile) {
       imageData.append('profileImage', selectedFile, selectedFile.name);
       axios.defaults.withCredentials = true;
-      axios.post('http://localhost:3001/createGroup/profile-img-upload', imageData, {
+      axios.post(`${BACKEND_URL}/createGroup/profile-img-upload`, imageData, {
         headers: {
           accept: 'application/json',
           'Accept-Language': 'en-US,en;q=0.8',
@@ -115,7 +117,7 @@ class CreateGroup extends Component {
             fileLocation,
           };
           axios.defaults.withCredentials = true;
-          axios.post('http://localhost:3001/createGroup/storeImage', groupData);
+          axios.post(`${BACKEND_URL}/createGroup/storeImage`, groupData);
         });
     }
   }

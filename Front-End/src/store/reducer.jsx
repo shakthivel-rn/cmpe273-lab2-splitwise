@@ -2,7 +2,10 @@
 const initialState = {
   id: '',
   name: '',
+  userDetails: {},
   totalAmounts: {},
+  youOwe: [],
+  youAreOwed: [],
   settleUpUserNames: [],
   joinedGroups: [],
   invitedGroups: [],
@@ -87,6 +90,24 @@ const reducer = (state = initialState, action) => {
     return {
       ...state,
       recentActivity: [...action.value],
+    };
+  }
+  if (action.type === 'GET_USER_DETAILS') {
+    return {
+      ...state,
+      userDetails: action.value,
+    };
+  }
+  if (action.type === 'GET_YOU_OWE') {
+    return {
+      ...state,
+      youOwe: [...action.value],
+    };
+  }
+  if (action.type === 'GET_YOU_ARE_OWED') {
+    return {
+      ...state,
+      youAreOwed: [...action.value],
     };
   }
   if (action.type === 'REMOVE_USER') {

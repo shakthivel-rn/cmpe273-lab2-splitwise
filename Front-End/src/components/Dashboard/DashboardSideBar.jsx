@@ -8,6 +8,7 @@ import {
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { connect } from 'react-redux';
+import BACKEND_URL from '../../constants/constants';
 
 class DashboardSideBar extends Component {
   constructor(props) {
@@ -24,7 +25,7 @@ class DashboardSideBar extends Component {
   async componentDidMount() {
     const { userId } = this.state;
     axios.defaults.headers.common.authorization = localStorage.getItem('token');
-    const res = await axios.get('http://localhost:3001/dashboard/getGroupNames', { params: { userId } });
+    const res = await axios.get(`${BACKEND_URL}/dashboard/getGroupNames`, { params: { userId } });
     this.setState({
       groups: [...res.data],
       fadeFlag: true,
@@ -36,7 +37,7 @@ class DashboardSideBar extends Component {
   async getDashboardSidebarDetails() {
     const { userId } = this.state;
     axios.defaults.headers.common.authorization = localStorage.getItem('token');
-    const res = await axios.get('http://localhost:3001/dashboard/getGroupNames', { params: { userId } });
+    const res = await axios.get(`${BACKEND_URL}/dashboard/getGroupNames`, { params: { userId } });
     this.setState({
       groups: [...res.data],
       fadeFlag: true,

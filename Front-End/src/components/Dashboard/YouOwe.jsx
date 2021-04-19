@@ -7,6 +7,7 @@ import { connect } from 'react-redux';
 import {
   ListGroup, Fade,
 } from 'react-bootstrap';
+import BACKEND_URL from '../../constants/constants';
 
 class YouOwe extends Component {
   constructor(props) {
@@ -26,7 +27,10 @@ class YouOwe extends Component {
 
   async getYouAreOwedDetails() {
     const { userId } = this.state;
-    const res = await axios.get('http://localhost:3001/dashboard/getIndividualOwedAmount', { params: { userId } });
+    const { onGetYouOwe } = this.props;
+    axios.defaults.headers.common.authorization = localStorage.getItem('token');
+    const res = await axios.get(`${BACKEND_URL}/dashboard/getIndividualOwedAmount`, { params: { userId } });
+    onGetYouOwe(res.data);
     this.setState({
       youowes: [...res.data],
       fadeFlag: true,
@@ -71,6 +75,7 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   onSettleUpAction: (userData) => dispatch({ type: 'RENDER_YOU_OWE', value: userData }),
+  onGetYouOwe: (userData) => dispatch({ type: 'GET_YOU_OWE', value: userData }),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(YouOwe);

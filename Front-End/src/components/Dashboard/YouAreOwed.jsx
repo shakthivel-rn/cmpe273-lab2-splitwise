@@ -7,6 +7,7 @@ import { connect } from 'react-redux';
 import {
   ListGroup, Fade,
 } from 'react-bootstrap';
+import BACKEND_URL from '../../constants/constants';
 
 class YouAreOwed extends Component {
   constructor(props) {
@@ -21,7 +22,10 @@ class YouAreOwed extends Component {
 
   async componentDidMount() {
     const { userId } = this.state;
-    const res = await axios.get('http://localhost:3001/dashboard/getIndividualPaidAmount', { params: { userId } });
+    const { onGetYouAreOwed } = this.props;
+    axios.defaults.headers.common.authorization = localStorage.getItem('token');
+    const res = await axios.get(`${BACKEND_URL}/dashboard/getIndividualPaidAmount`, { params: { userId } });
+    onGetYouAreOwed(res.data);
     const { owed } = this.state;
     this.setState({
       owed: owed.concat(res.data),
@@ -54,4 +58,8 @@ const mapStateToProps = (state) => ({
   userIdRedux: state.id,
 });
 
-export default connect(mapStateToProps)(YouAreOwed);
+const mapDispatchToProps = (dispatch) => ({
+  onGetYouAreOwed: (userData) => dispatch({ type: 'GET_YOU_ARE_OWED', value: userData }),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(YouAreOwed);

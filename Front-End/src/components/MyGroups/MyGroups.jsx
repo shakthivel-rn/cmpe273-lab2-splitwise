@@ -12,6 +12,7 @@ import { connect } from 'react-redux';
 import SweetAlert from 'react-bootstrap-sweetalert';
 import Navigationbar from '../Navigationbar/Navigationbar';
 import DashboardSideBar from '../Dashboard/DashboardSideBar';
+import BACKEND_URL from '../../constants/constants';
 
 class MyGroups extends Component {
   constructor(props) {
@@ -42,8 +43,8 @@ class MyGroups extends Component {
       userId,
       groupId,
     };
-    axios.defaults.withCredentials = true;
-    axios.post('http://localhost:3001/myGroups/acceptGroupInvite', data)
+    axios.defaults.headers.common.authorization = localStorage.getItem('token');
+    axios.post(`${BACKEND_URL}/myGroups/acceptGroupInvite`, data)
       .then(() => {
         this.setState({
           inviteFlag: true,
@@ -57,8 +58,8 @@ class MyGroups extends Component {
       userId,
       groupName,
     };
-    axios.defaults.withCredentials = true;
-    axios.post('http://localhost:3001/myGroups/leaveGroup', data)
+    axios.defaults.headers.common.authorization = localStorage.getItem('token');
+    axios.post(`${BACKEND_URL}/myGroups/leaveGroup`, data)
       .then(() => {
         this.setState({
           leaveGroupFlag: true,
@@ -74,12 +75,14 @@ class MyGroups extends Component {
   async getMyGroupDetails() {
     const { userId } = this.state;
     const { onGetJoinedGroups, onGetInvitedGroups } = this.props;
-    const resGroupNames = await axios.get('http://localhost:3001/dashboard/getGroupNames', { params: { userId } });
+    axios.defaults.headers.common.authorization = localStorage.getItem('token');
+    const resGroupNames = await axios.get(`${BACKEND_URL}/dashboard/getGroupNames`, { params: { userId } });
     this.setState({
       groupList: [...resGroupNames.data],
     });
     onGetJoinedGroups(resGroupNames.data);
-    const resGroupInvites = await axios.get('http://localhost:3001/myGroups', { params: { userId } });
+    axios.defaults.headers.common.authorization = localStorage.getItem('token');
+    const resGroupInvites = await axios.get(`${BACKEND_URL}/myGroups`, { params: { userId } });
     this.setState({
       inviteList: [...resGroupInvites.data],
       fadeFlag: true,
