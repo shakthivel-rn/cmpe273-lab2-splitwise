@@ -27,15 +27,18 @@ class Navigationbar extends Component {
   }
 
   getUserProfileImage = async () => {
-    const { userId } = this.state;
-    const res = await axios.get(`${BACKEND_URL}/profilePage/getImage`, { params: { userId } });
-    this.setState({
-      imagePreview: res.data.userImage,
-    });
+    const { userId, authenticationToken } = this.state;
+    if (authenticationToken !== null) {
+      const res = await axios.get(`${BACKEND_URL}/profilePage/getImage`, { params: { userId } });
+      this.setState({
+        imagePreview: res.data.userImage,
+      });
+    }
   }
 
   handleLogout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('userId');
   }
 
   render() {

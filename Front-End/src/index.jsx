@@ -6,10 +6,10 @@ import { Provider } from 'react-redux';
 import './index.css';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import App from './App';
-import reducer from './store/reducer';
+import reduxStore from './store/reducer';
 import reportWebVitals from './reportWebVitals';
 
-const store = createStore(reducer, composeWithDevTools());
+const store = createStore(reduxStore.reducer, composeWithDevTools());
 
 ReactDOM.render(
   <Provider store={store}>

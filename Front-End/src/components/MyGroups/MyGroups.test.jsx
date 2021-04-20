@@ -1,10 +1,10 @@
 /* eslint-disable no-undef */
 import React from 'react';
 import { screen } from '@testing-library/react';
-import Navigationbar from './Navigationbar';
+import MyGroups from './MyGroups';
 import renderConnected from '../../test/renderConnected';
 
-describe('Navigation Bar Component', () => {
+describe('My Groups Component', () => {
   const initialState = {
     // ... Add your initial testing state here
     id: '',
@@ -26,11 +26,11 @@ describe('Navigation Bar Component', () => {
   };
 
   beforeEach(() => {
-    renderConnected(<Navigationbar />, { initialState });
+    renderConnected(<MyGroups />, { initialState });
   });
 
   it('renders the component', () => {
-    expect(screen.getByText('Splitwise')).toBeInTheDocument();
-    expect(screen.queryByText('Splitwise:')).toBeNull();
+    expect(screen.getByText('Group Invites')).toBeInTheDocument();
+    expect(screen.queryByText('Group Invites:')).toBeNull();
   });
 });
