@@ -1,4 +1,5 @@
 import React from 'react';
+import { BrowserRouter } from 'react-router-dom';
 import { render } from '@testing-library/react';
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
@@ -13,7 +14,7 @@ const renderConnected = (
   } = {},
 ) => {
   const Wrapper = ({ children }) => (
-    <Provider store={store}>{children}</Provider>
+    <Provider store={store}><BrowserRouter>{children}</BrowserRouter></Provider>
   );
   return render(ui, { wrapper: Wrapper, ...renderOptions });
 };

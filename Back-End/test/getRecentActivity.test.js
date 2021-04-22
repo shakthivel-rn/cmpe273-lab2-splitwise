@@ -5,11 +5,30 @@ describe('GET With Passport JWT Authentication /recentActivity', () => {
   it('should succesfully return recent activity of the user', (done) => {
     request
       .get('/recentActivity')
-      .set('Authorization', 'JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MDc3NGUyMmIzZmQ3YzQyZTgwMzQxZmEiLCJuYW1lIjoiQWRtaW4iLCJpYXQiOjE2MTg0MzQ3MjQsImV4cCI6MTYxOTQ0MjcyNH0.Fxsm8XfF56zcRnckWwNME9TxdfEKwAoTt6ARj1XrN1I')
+      .set('Authorization', 'JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MDdmNjA0YmVlMWYzYmEwYTMxYmE0YjciLCJuYW1lIjoiQWRtaW4iLCJpYXQiOjE2MTg5NjEyNjgsImV4cCI6MTYxOTk2OTI2OH0.skqxTGmwRxbzzF1wdXd6n0ViyOiy0lzH8u3r0Phv-j8')
       .query({
-        userId: '60774e22b3fd7c42e80341fa', pageNumber: 1, pageSize: 2, order: 'desc', selectedGroup: 'All',
+        userId: '607f604bee1f3ba0a31ba4b7', pageNumber: 1, pageSize: 2, order: 'desc', selectedGroup: 'All',
       })
       .expect('Content-Type', /json/)
-      .expect(200, done);
+      .expect(200, [
+        {
+          expenseName: 'Dinner',
+          expenseAmount: 80,
+          groupName: 'Daily',
+          paidUserName: 'Jack',
+          owedUserName: 'John',
+          splitAmount: 26.67,
+          status: 'owes',
+        },
+        {
+          expenseName: 'Dinner',
+          expenseAmount: 80,
+          groupName: 'Daily',
+          paidUserName: 'Jack',
+          owedUserName: 'Jack',
+          splitAmount: 26.67,
+          status: 'added',
+        },
+      ], done);
   });
 });
