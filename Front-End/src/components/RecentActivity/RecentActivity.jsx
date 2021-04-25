@@ -270,7 +270,7 @@ class RecentActivity extends Component {
                       )}
                     </div>
                   </Fade>
-                  <Pagination>{items}</Pagination>
+                  <Pagination id="paginationElement">{items}</Pagination>
                 </Col>
               </Row>
             </Container>

@@ -9,3 +9,7 @@
 #recentactivitycontent {
     margin-top: 10px;
 }
+
+#paginationElement {
+    flex-wrap: wrap;
+}
